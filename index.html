@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Search Debounce UX Prototype — Search Slid Up</title>
+  <title>Search Debounce UX Prototype — App Positioned Under Controls</title>
   <style>
     :root {
       --bg: #f6f7f9;
@@ -76,10 +76,8 @@
     }
 
     .app-panel {
-      grid-column: 1;
-      grid-row: 2;
       box-shadow: var(--shadow);
-      margin-top: 0;
+      margin-top: 18px;
     }
 
     .controls-card {
@@ -476,9 +474,7 @@
 
     @media (max-width: 1040px) {
       .layout { grid-template-columns: 1fr; }
-      .right-rail, .app-panel { grid-column: auto; grid-row: auto; }
-      .app-panel { order: 2; }
-      .right-rail { order: 3; }
+      .right-rail { grid-column: auto; grid-row: auto; }
       .controls-card { grid-template-columns: 1fr; max-width: none; }
       .ghost-button { justify-self: start; }
       .metrics { grid-template-columns: repeat(2, 1fr); }
@@ -512,6 +508,26 @@
           </div>
           <button class="ghost-button" id="resetBtn">Reset demo</button>
         </section>
+      <section class="panel app-panel">
+        <div class="app-surface" aria-label="Search application demo">
+          <div class="label" style="margin-bottom:10px;">Application search</div>
+          <div class="search-wrap">
+            <input id="searchInput" class="search-input" autocomplete="off" placeholder="Try typing: prospectus, investor, roadshow…" autofocus />
+            <span class="search-icon">⌕</span>
+          </div>
+          <div class="hint-row">
+            <span id="modeHint">Mode: 200 ms debounce</span>
+            <span id="lastQueryHint">No query yet</span>
+          </div>
+
+          <div class="results-shell">
+            <div class="results-overlay" id="resultsOverlay" aria-hidden="true">
+              <div class="loading-card"><span class="spinner"></span><span id="overlayText">Searching results…</span></div>
+            </div>
+            <div class="results" id="results" aria-live="polite"></div>
+          </div>
+        </div>
+      </section>
       </div>
       <aside class="right-rail">
         <section class="takeaway header-takeaway">
@@ -595,26 +611,6 @@
         </div>
       </aside>
 
-      <section class="panel app-panel">
-        <div class="app-surface" aria-label="Search application demo">
-          <div class="label" style="margin-bottom:10px;">Application search</div>
-          <div class="search-wrap">
-            <input id="searchInput" class="search-input" autocomplete="off" placeholder="Try typing: prospectus, investor, roadshow…" autofocus />
-            <span class="search-icon">⌕</span>
-          </div>
-          <div class="hint-row">
-            <span id="modeHint">Mode: 200 ms debounce</span>
-            <span id="lastQueryHint">No query yet</span>
-          </div>
-
-          <div class="results-shell">
-            <div class="results-overlay" id="resultsOverlay" aria-hidden="true">
-              <div class="loading-card"><span class="spinner"></span><span id="overlayText">Searching results…</span></div>
-            </div>
-            <div class="results" id="results" aria-live="polite"></div>
-          </div>
-        </div>
-      </section>
     </section>
 
   <script>
