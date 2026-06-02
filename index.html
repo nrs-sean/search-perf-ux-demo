@@ -111,6 +111,42 @@
 
     .control-group { min-width: 0; }
 
+    .label-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .preset-pills {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      flex-wrap: nowrap;
+    }
+
+    .preset-pill {
+      border: 1px solid var(--border);
+      background: #f8fafc;
+      color: var(--ink);
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 12px;
+      line-height: 1;
+      font-weight: 800;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: .15s ease;
+    }
+
+    .preset-pill:hover {
+      border-color: #bfc8d4;
+      background: #fff;
+      transform: translateY(-1px);
+    }
+
+
     .segmented {
       display: flex;
       flex-wrap: nowrap;
@@ -481,7 +517,8 @@
     }
 
     @media (max-width: 540px) {
-      .segmented button { flex-basis: calc(50% - 4px); }
+      .segmented { overflow-x: auto; padding-bottom: 2px; }
+      .segmented button { flex-basis: auto; }
       .metrics { grid-template-columns: 1fr; }
       .status-strip { grid-template-columns: 1fr; }
       .bar-row { grid-template-columns: 92px 1fr 46px; }
@@ -497,7 +534,13 @@
         <section class="controls-card" aria-label="Prototype controls">
           <div class="stacked-controls">
             <div class="control-group">
-              <div class="label">Debounce delay</div>
+              <div class="label-row">
+                <div class="label">Debounce delay</div>
+                <div class="preset-pills" aria-label="Preset combinations">
+                  <button class="preset-pill" type="button" id="presetNrs">Typical NRS</button>
+                  <button class="preset-pill" type="button" id="presetEnterprise">Enterprise Standard</button>
+                </div>
+              </div>
               <div class="segmented" id="debounceButtons"></div>
             </div>
             <div class="control-group latency-control">
@@ -660,6 +703,8 @@
       overlayText: document.getElementById('overlayText'),
       eventLog: document.getElementById('eventLog'),
       resetBtn: document.getElementById('resetBtn'),
+      presetNrs: document.getElementById('presetNrs'),
+      presetEnterprise: document.getElementById('presetEnterprise'),
       waitBar: document.getElementById('waitBar'),
       loadBar: document.getElementById('loadBar'),
       uxBar: document.getElementById('uxBar'),
@@ -684,6 +729,21 @@
         });
         els.buttons.appendChild(btn);
       });
+    }
+
+
+
+    function applyPreset(label, nextDebounce, nextLatency) {
+      debounceDelay = nextDebounce;
+      latency = nextLatency;
+      els.latencyRange.value = String(nextLatency);
+      els.latencyLabel.textContent = `${nextLatency} ms`;
+      els.modeHint.textContent = `Mode: ${nextDebounce === 0 ? 'no debounce' : nextDebounce + ' ms debounce'}`;
+      initButtons();
+      updateTradeoffViz();
+      addLog(`Applied <strong>${label}</strong> preset: ${nextDebounce} ms debounce + ${nextLatency} ms server latency.`);
+      scheduleSearch();
+      els.input.focus();
     }
 
     function addLog(message) {
@@ -833,6 +893,9 @@
       updateTradeoffViz();
       addLog(`Server latency changed to <strong>${latency} ms</strong>.`);
     });
+
+    els.presetNrs.addEventListener('click', () => applyPreset('Typical NRS', 500, 6000));
+    els.presetEnterprise.addEventListener('click', () => applyPreset('Enterprise Standard', 200, 800));
 
     els.resetBtn.addEventListener('click', () => {
       debounceTimer && clearTimeout(debounceTimer);
