@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Search Debounce UX Prototype — Right Cards Slid Up</title>
+  <title>Search Debounce UX Prototype — Search Slid Up</title>
   <style>
     :root {
       --bg: #f6f7f9;
@@ -39,7 +39,8 @@
     .layout {
       display: grid;
       grid-template-columns: minmax(0, 1.08fr) 420px;
-      gap: 22px;
+      column-gap: 22px;
+      row-gap: 12px;
       align-items: start;
     }
 
@@ -75,7 +76,10 @@
     }
 
     .app-panel {
+      grid-column: 1;
+      grid-row: 2;
       box-shadow: var(--shadow);
+      margin-top: 0;
     }
 
     .controls-card {
@@ -473,6 +477,8 @@
     @media (max-width: 1040px) {
       .layout { grid-template-columns: 1fr; }
       .right-rail, .app-panel { grid-column: auto; grid-row: auto; }
+      .app-panel { order: 2; }
+      .right-rail { order: 3; }
       .controls-card { grid-template-columns: 1fr; max-width: none; }
       .ghost-button { justify-self: start; }
       .metrics { grid-template-columns: repeat(2, 1fr); }
