@@ -512,7 +512,7 @@
         <div class="app-surface" aria-label="Search application demo">
           <div class="label" style="margin-bottom:10px;">Application search</div>
           <div class="search-wrap">
-            <input id="searchInput" class="search-input" autocomplete="off" placeholder="Try typing: prospectus, investor, roadshow…" autofocus />
+            <input id="searchInput" class="search-input" autocomplete="off" placeholder="Try typing: email, prospectus, investor, roadshow…" autofocus />
             <span class="search-icon">⌕</span>
           </div>
           <div class="hint-row">
@@ -537,6 +537,29 @@
         </div>
         </section>
         <div class="right-stack">
+        <section class="panel">
+          <h2>What this demonstrates</h2>
+          <p class="explainer">Debounce delay and server latency compound. Debounce is the intentional wait before posting; server latency is the unavoidable wait after posting. The user feels the sum of both.</p>
+          <div class="bars">
+            <div class="bar-row">
+              <span>Perceived wait</span>
+              <div class="bar-track"><div class="bar-fill" id="waitBar"></div></div>
+              <strong id="waitLabel">450</strong>
+            </div>
+            <div class="bar-row">
+              <span>Request load</span>
+              <div class="bar-track"><div class="bar-fill" id="loadBar"></div></div>
+              <strong id="loadLabel">40%</strong>
+            </div>
+            <div class="bar-row">
+              <span>UX feel</span>
+              <div class="bar-track"><div class="bar-fill" id="uxBar"></div></div>
+              <strong id="uxLabel">Good</strong>
+            </div>
+          </div>
+        </section>
+
+
     <section class="panel instrumentation-panel" aria-label="Debounce instrumentation">
       <h2>Debounce instrumentation</h2>
       <p class="explainer">Measurement lives outside the app. The key UX equation is debounce delay + server latency = perceived wait after the user stops typing.</p>
@@ -581,28 +604,6 @@
         </div>
       </div>
     </section>
-
-        <section class="panel">
-          <h2>What this demonstrates</h2>
-          <p class="explainer">Debounce delay and server latency compound. Debounce is the intentional wait before posting; server latency is the unavoidable wait after posting. The user feels the sum of both.</p>
-          <div class="bars">
-            <div class="bar-row">
-              <span>Perceived wait</span>
-              <div class="bar-track"><div class="bar-fill" id="waitBar"></div></div>
-              <strong id="waitLabel">450</strong>
-            </div>
-            <div class="bar-row">
-              <span>Request load</span>
-              <div class="bar-track"><div class="bar-fill" id="loadBar"></div></div>
-              <strong id="loadLabel">40%</strong>
-            </div>
-            <div class="bar-row">
-              <span>UX feel</span>
-              <div class="bar-track"><div class="bar-fill" id="uxBar"></div></div>
-              <strong id="uxLabel">Good</strong>
-            </div>
-          </div>
-        </section>
 
         <section class="panel">
           <h2>Event log</h2>
