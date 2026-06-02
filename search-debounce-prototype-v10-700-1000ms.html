@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Search Debounce UX Prototype</title>
+  <style>
+    :root {
+      --bg: #f6f7f9;
+      --panel: #ffffff;
+      --ink: #172033;
+      --muted: #637083;
+      --border: #dfe4ea;
+      --accent: #315efb;
+      --accent-soft: #e9eeff;
+      --good: #0f8a56;
+      --warn: #b06200;
+      --bad: #b42318;
+      --shadow: 0 18px 45px rgba(23, 32, 51, .09);
+      --radius: 18px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: radial-gradient(circle at top left, #eef3ff 0, #f6f7f9 38%, #f5f5f3 100%);
+      color: var(--ink);
+      min-height: 100vh;
+    }
+
+    .page {
+      width: min(1180px, calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 38px 0 56px;
+    }
+
+    header {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 340px;
+      gap: 24px;
+      align-items: start;
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      font-size: clamp(30px, 4vw, 52px);
+      line-height: 1.02;
+      letter-spacing: -0.055em;
+      margin: 0 0 12px;
+    }
+
+    .lede {
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.55;
+      max-width: 780px;
+      margin: 0;
+    }
+
+    .controls-card, .panel {
+      background: rgba(255,255,255,.88);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(223, 228, 234, .88);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .controls-card {
+      padding: 16px;
+      display: grid;
+      grid-template-columns: minmax(280px, 1.05fr) minmax(320px, 1.15fr) auto;
+      gap: 18px;
+      align-items: end;
+      margin-top: 22px;
+      max-width: 850px;
+    }
+
+    .label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    .segmented {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px;
+    }
+
+    button, input[type="range"] { font: inherit; }
+
+    .segmented button, .ghost-button, .primary-button {
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--ink);
+      border-radius: 12px;
+      padding: 10px 12px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: .15s ease;
+    }
+
+    .segmented button:hover, .ghost-button:hover { border-color: #bfc8d4; transform: translateY(-1px); }
+
+    .segmented button.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+      box-shadow: 0 10px 22px rgba(49, 94, 251, .22);
+    }
+
+    .ghost-button { color: var(--muted); }
+
+    .range-caption {
+      display: flex;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: 11px;
+      margin-top: 2px;
+    }
+    .primary-button { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.08fr) 420px;
+      gap: 22px;
+      align-items: start;
+    }
+
+    .panel { padding: 22px; }
+
+    .app-surface {
+      border: 1px solid var(--border);
+      background: #fff;
+      border-radius: 18px;
+      padding: 18px;
+    }
+
+    .search-wrap {
+      position: relative;
+      margin-bottom: 18px;
+    }
+
+    .search-input {
+      width: 100%;
+      border: 1px solid #cfd7e3;
+      border-radius: 17px;
+      padding: 18px 52px 18px 18px;
+      font-size: 22px;
+      outline: none;
+      background: #fff;
+      box-shadow: inset 0 1px 0 rgba(0,0,0,.02);
+    }
+
+    .search-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px rgba(49, 94, 251, .12);
+    }
+
+    .search-icon {
+      position: absolute;
+      right: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      font-size: 24px;
+    }
+
+    .hint-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .instrumentation {
+      margin-bottom: 12px;
+    }
+
+    .metric {
+      border: 1px solid var(--border);
+      background: #fbfcfe;
+      border-radius: 14px;
+      padding: 12px;
+      min-height: 98px;
+    }
+
+    .metric .value {
+      font-size: 25px;
+      line-height: 1;
+      letter-spacing: -.04em;
+      margin-top: 8px;
+      font-weight: 800;
+    }
+
+    .metric .caption {
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.3;
+      margin-top: 8px;
+    }
+
+    .status-strip {
+      display: grid;
+      grid-template-columns: 112px 1fr;
+      gap: 12px;
+      align-items: center;
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, #fff, #fafbfc);
+      border-radius: 15px;
+      padding: 12px;
+      margin-bottom: 0;
+    }
+
+    .instrumentation-status {
+      margin-top: 4px;
+    }
+
+    .state-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      font-weight: 800;
+      padding: 9px 12px;
+      font-size: 13px;
+      background: #eef1f5;
+      color: #4d5a6c;
+    }
+
+    .state-pill.waiting { background: #fff4df; color: var(--warn); }
+    .state-pill.searching { background: var(--accent-soft); color: var(--accent); }
+    .state-pill.done { background: #e8f7ef; color: var(--good); }
+
+    .timeline-track {
+      height: 10px;
+      background: #eef1f5;
+      border-radius: 999px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .timeline-fill {
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 0;
+      background: var(--accent);
+      border-radius: inherit;
+      transition: width .12s linear;
+    }
+
+    .results-shell {
+      position: relative;
+      min-height: 94px;
+    }
+
+    .results {
+      display: grid;
+      gap: 10px;
+    }
+
+    .results-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 5;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 14px;
+      border: 1px solid rgba(49, 94, 251, .18);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, .78);
+      backdrop-filter: blur(3px);
+    }
+
+    .results-overlay.active { display: flex; }
+
+    .loading-card {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: #fff;
+      padding: 11px 15px;
+      box-shadow: 0 12px 30px rgba(23, 32, 51, .10);
+      font-weight: 800;
+      color: var(--ink);
+    }
+
+    .spinner {
+      width: 18px;
+      height: 18px;
+      border: 3px solid #e6ebf2;
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+    }
+
+    .result-row {
+      border: 1px solid var(--border);
+      background: #fff;
+      border-radius: 14px;
+      padding: 13px 14px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 14px;
+      align-items: center;
+      animation: fadeIn .22s ease;
+    }
+
+    .result-title { font-weight: 800; margin-bottom: 4px; }
+    .result-meta { color: var(--muted); font-size: 13px; }
+    .result-badge {
+      background: #f2f4f7;
+      color: var(--muted);
+      border-radius: 999px;
+      font-size: 12px;
+      padding: 6px 9px;
+      font-weight: 700;
+    }
+
+    .right-stack { display: grid; gap: 22px; }
+
+    .instrumentation-panel h2 { margin-bottom: 6px; }
+    .instrumentation-panel .explainer { font-size: 13px; margin-bottom: 14px; }
+
+    h2 {
+      font-size: 20px;
+      letter-spacing: -.025em;
+      margin: 0 0 12px;
+    }
+
+    .explainer {
+      color: var(--muted);
+      line-height: 1.55;
+      margin: 0 0 16px;
+    }
+
+    .bars {
+      display: grid;
+      gap: 14px;
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: 122px 1fr 56px;
+      gap: 12px;
+      align-items: center;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .bar-track {
+      background: #eef1f5;
+      border-radius: 999px;
+      height: 13px;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--accent);
+      border-radius: inherit;
+      transition: width .22s ease;
+    }
+
+    .event-log {
+      max-height: 318px;
+      overflow: auto;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: #fbfcfe;
+    }
+
+    .log-row {
+      display: grid;
+      grid-template-columns: 82px 1fr;
+      gap: 10px;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+    }
+
+    .log-row:last-child { border-bottom: 0; }
+    .log-time { color: var(--muted); font-variant-numeric: tabular-nums; }
+    .log-message strong { color: var(--ink); }
+
+    .takeaway {
+      border: 1px solid #d9e3ff;
+      background: #f4f7ff;
+      border-radius: 16px;
+      padding: 16px;
+      line-height: 1.5;
+      color: #27334a;
+    }
+
+    .takeaway strong { color: #12204a; }
+
+    .header-takeaway {
+      align-self: stretch;
+      display: flex;
+      align-items: center;
+      min-height: 154px;
+    }
+
+    .header-takeaway h2 {
+      margin-bottom: 8px;
+    }
+
+    .header-takeaway p {
+      margin: 0;
+      color: #27334a;
+      line-height: 1.5;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 940px) {
+      header, .grid { grid-template-columns: 1fr; }
+      .controls-card { grid-template-columns: 1fr; max-width: none; }
+      .metrics { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 540px) {
+      .segmented { grid-template-columns: repeat(2, 1fr); }
+      .metrics { grid-template-columns: 1fr; }
+      .status-strip { grid-template-columns: 1fr; }
+      .bar-row { grid-template-columns: 92px 1fr 46px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <div>
+        <h1>Search debounce UX simulator</h1>
+        <p class="lede">Type in the search box and adjust both debounce delay and server latency to see the tradeoff: debounce controls when the request starts; latency controls how long the server takes once the request is sent.</p>
+        <section class="controls-card" aria-label="Prototype controls">
+          <div>
+            <div class="label">Debounce delay</div>
+            <div class="segmented" id="debounceButtons"></div>
+          </div>
+          <div>
+            <div class="label">Server latency after request: <span id="latencyLabel">250 ms</span></div>
+            <input id="latencyRange" type="range" min="50" max="10000" value="250" step="50" style="width:100%; margin-top:8px;" />
+            <div class="range-caption"><span>50 ms</span><span>5,000 ms</span><span>10,000 ms</span></div>
+          </div>
+          <button class="ghost-button" id="resetBtn">Reset demo</button>
+        </section>
+      </div>
+      <section class="takeaway header-takeaway">
+        <div>
+          <h2>UX takeaway</h2>
+          <p><strong>For server-backed typeahead, 150–250 ms is usually a good starting point.</strong> Past ~300 ms of debounce, users begin to feel the delay; with high server latency, even a “good” debounce may feel slow.</p>
+        </div>
+      </section>
+    </header>
+
+    <section class="grid">
+      <section class="panel app-panel">
+        <div class="app-surface" aria-label="Search application demo">
+          <div class="label" style="margin-bottom:10px;">Application search</div>
+          <div class="search-wrap">
+            <input id="searchInput" class="search-input" autocomplete="off" placeholder="Try typing: prospectus, investor, roadshow…" autofocus />
+            <span class="search-icon">⌕</span>
+          </div>
+          <div class="hint-row">
+            <span id="modeHint">Mode: 200 ms debounce</span>
+            <span id="lastQueryHint">No query yet</span>
+          </div>
+
+          <div class="results-shell">
+            <div class="results-overlay" id="resultsOverlay" aria-hidden="true">
+              <div class="loading-card"><span class="spinner"></span><span id="overlayText">Searching results…</span></div>
+            </div>
+            <div class="results" id="results" aria-live="polite">
+              <div class="result-row">
+                <div>
+                  <div class="result-title">Start typing to search</div>
+                  <div class="result-meta">The demo will simulate debounce delay, server request time, and result updates.</div>
+                </div>
+                <span class="result-badge">Demo</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="right-stack">
+    <section class="panel instrumentation-panel" aria-label="Debounce instrumentation">
+      <h2>Debounce instrumentation</h2>
+      <p class="explainer">Measurement lives outside the app. The key UX equation is debounce delay + server latency = perceived wait after the user stops typing.</p>
+
+      <div class="metrics instrumentation" aria-label="Demo instrumentation">
+        <div class="metric">
+          <div class="label">Keystrokes</div>
+          <div class="value" id="keystrokes">0</div>
+          <div class="caption">Every character typed.</div>
+        </div>
+        <div class="metric">
+          <div class="label">Requests</div>
+          <div class="value" id="requests">0</div>
+          <div class="caption">Calls posted to the server.</div>
+        </div>
+        <div class="metric">
+          <div class="label">Suppressed</div>
+          <div class="value" id="suppressed">0</div>
+          <div class="caption">Requests avoided by debouncing.</div>
+        </div>
+        <div class="metric">
+          <div class="label">Last update</div>
+          <div class="value" id="lastUpdate">—</div>
+          <div class="caption">Time from last keypress to results.</div>
+        </div>
+        <div class="metric">
+          <div class="label">Server latency</div>
+          <div class="value" id="latencyMetric">250 ms</div>
+          <div class="caption">Time after request is posted.</div>
+        </div>
+        <div class="metric">
+          <div class="label">Expected wait</div>
+          <div class="value" id="expectedWait">450 ms</div>
+          <div class="caption">Debounce + server latency.</div>
+        </div>
+      </div>
+
+      <div class="status-strip instrumentation-status">
+        <div class="state-pill done" id="statePill">Ready</div>
+        <div>
+          <div class="timeline-track"><div class="timeline-fill" id="timelineFill"></div></div>
+        </div>
+      </div>
+    </section>
+
+        <section class="panel">
+          <h2>What this demonstrates</h2>
+          <p class="explainer">Debounce delay and server latency compound. Debounce is the intentional wait before posting; server latency is the unavoidable wait after posting. The user feels the sum of both.</p>
+          <div class="bars">
+            <div class="bar-row">
+              <span>Perceived wait</span>
+              <div class="bar-track"><div class="bar-fill" id="waitBar"></div></div>
+              <strong id="waitLabel">450</strong>
+            </div>
+            <div class="bar-row">
+              <span>Request load</span>
+              <div class="bar-track"><div class="bar-fill" id="loadBar"></div></div>
+              <strong id="loadLabel">40%</strong>
+            </div>
+            <div class="bar-row">
+              <span>UX feel</span>
+              <div class="bar-track"><div class="bar-fill" id="uxBar"></div></div>
+              <strong id="uxLabel">Good</strong>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2>Event log</h2>
+          <div class="event-log" id="eventLog"></div>
+        </section>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    const debounceOptions = [0, 200, 300, 500, 700, 1000];
+    let debounceDelay = 200;
+    let latency = 250;
+    let debounceTimer = null;
+    let requestSeq = 0;
+    let activeRequest = 0;
+    let keystrokes = 0;
+    let requests = 0;
+    let suppressed = 0;
+    let lastKeyTime = null;
+    let progressTimer = null;
+
+    const sampleResults = [
+      'Investor engagement summary',
+      'Offering memorandum prospectus',
+      'Roadshow analytics event',
+      'Buy-side attendee list',
+      'Document distribution history',
+      'Presentation viewer activity',
+      'Issuer branding configuration',
+      'Syndicate bank contacts',
+      'Public filings library',
+      'Capital markets event setup'
+    ];
+
+    const els = {
+      buttons: document.getElementById('debounceButtons'),
+      input: document.getElementById('searchInput'),
+      latencyRange: document.getElementById('latencyRange'),
+      latencyLabel: document.getElementById('latencyLabel'),
+      modeHint: document.getElementById('modeHint'),
+      lastQueryHint: document.getElementById('lastQueryHint'),
+      keystrokes: document.getElementById('keystrokes'),
+      requests: document.getElementById('requests'),
+      suppressed: document.getElementById('suppressed'),
+      lastUpdate: document.getElementById('lastUpdate'),
+      latencyMetric: document.getElementById('latencyMetric'),
+      expectedWait: document.getElementById('expectedWait'),
+      statePill: document.getElementById('statePill'),
+      timelineFill: document.getElementById('timelineFill'),
+      results: document.getElementById('results'),
+      resultsOverlay: document.getElementById('resultsOverlay'),
+      overlayText: document.getElementById('overlayText'),
+      eventLog: document.getElementById('eventLog'),
+      resetBtn: document.getElementById('resetBtn'),
+      waitBar: document.getElementById('waitBar'),
+      loadBar: document.getElementById('loadBar'),
+      uxBar: document.getElementById('uxBar'),
+      waitLabel: document.getElementById('waitLabel'),
+      loadLabel: document.getElementById('loadLabel'),
+      uxLabel: document.getElementById('uxLabel')
+    };
+
+    function initButtons() {
+      els.buttons.innerHTML = '';
+      debounceOptions.forEach(value => {
+        const btn = document.createElement('button');
+        btn.textContent = value === 0 ? 'None' : `${value} ms`;
+        btn.className = value === debounceDelay ? 'active' : '';
+        btn.addEventListener('click', () => {
+          debounceDelay = value;
+          initButtons();
+          updateTradeoffViz();
+          els.modeHint.textContent = `Mode: ${debounceDelay === 0 ? 'no debounce' : debounceDelay + ' ms debounce'}`;
+          addLog(`Switched to <strong>${debounceDelay === 0 ? 'no debounce' : debounceDelay + ' ms debounce'}</strong>.`);
+          scheduleSearch();
+        });
+        els.buttons.appendChild(btn);
+      });
+    }
+
+    function addLog(message) {
+      const row = document.createElement('div');
+      row.className = 'log-row';
+      row.innerHTML = `<span class="log-time">${new Date().toLocaleTimeString([], {minute:'2-digit', second:'2-digit'})}</span><span class="log-message">${message}</span>`;
+      els.eventLog.prepend(row);
+      while (els.eventLog.children.length > 16) els.eventLog.removeChild(els.eventLog.lastChild);
+    }
+
+    function setState(label, state) {
+      els.statePill.textContent = label;
+      els.statePill.className = `state-pill ${state}`;
+    }
+
+    function setResultsLoading(isLoading, query = '') {
+      els.resultsOverlay.classList.toggle('active', isLoading);
+      els.resultsOverlay.setAttribute('aria-hidden', isLoading ? 'false' : 'true');
+      if (isLoading) {
+        els.overlayText.textContent = `Searching “${query}”…`;
+      } else {
+      }
+    }
+
+    function startProgress(totalMs) {
+      clearInterval(progressTimer);
+      const start = performance.now();
+      els.timelineFill.style.width = '0%';
+      progressTimer = setInterval(() => {
+        const pct = Math.min(100, ((performance.now() - start) / totalMs) * 100);
+        els.timelineFill.style.width = `${pct}%`;
+        if (pct >= 100) clearInterval(progressTimer);
+      }, 40);
+    }
+
+    function updateMetrics() {
+      els.keystrokes.textContent = keystrokes;
+      els.requests.textContent = requests;
+      els.suppressed.textContent = suppressed;
+    }
+
+    function updateTradeoffViz() {
+      const totalWait = debounceDelay + latency;
+      const loadMap = {0: 100, 200: 40, 300: 28, 500: 15, 700: 10, 1000: 6};
+      const load = loadMap[debounceDelay] ?? Math.max(8, 100 - debounceDelay / 5);
+      let ux = 92;
+      let uxLabel = 'Best';
+      if (debounceDelay === 0 && latency < 300) { ux = 82; uxLabel = 'Fast/noisy'; }
+      if (totalWait > 500) { ux = 72; uxLabel = 'Noticeable'; }
+      if (totalWait > 750) { ux = 52; uxLabel = 'Slow'; }
+      if (totalWait > 1000) { ux = 34; uxLabel = 'Very slow'; }
+
+      els.waitLabel.textContent = `${totalWait} ms`;
+      els.loadLabel.textContent = `${load}%`;
+      els.uxLabel.textContent = uxLabel;
+      els.waitBar.style.width = `${Math.min(100, totalWait / 14)}%`;
+      els.loadBar.style.width = `${load}%`;
+      els.uxBar.style.width = `${ux}%`;
+      els.latencyMetric.textContent = `${latency} ms`;
+      els.expectedWait.textContent = `${totalWait} ms`;
+    }
+
+    function scheduleSearch() {
+      const query = els.input.value.trim();
+      if (debounceTimer) {
+        clearTimeout(debounceTimer);
+        if (query) suppressed++;
+      }
+      updateMetrics();
+
+      if (!query) {
+        setResultsLoading(false);
+        setState('Ready', 'done');
+        els.lastQueryHint.textContent = 'No query yet';
+        els.results.innerHTML = `<div class="result-row"><div><div class="result-title">Start typing to search</div><div class="result-meta">The demo will simulate debounce delay, server request time, and result updates.</div></div><span class="result-badge">Demo</span></div>`;
+        return;
+      }
+
+      lastKeyTime = performance.now();
+      els.lastQueryHint.textContent = `Current query: “${query}”`;
+
+      if (debounceDelay > 0) {
+        setState('Waiting', 'waiting');
+        startProgress(debounceDelay);
+        addLog(`Keystroke captured. Waiting <strong>${debounceDelay} ms</strong> before posting.`);
+      } else {
+        addLog(`Keystroke captured. Posting <strong>immediately</strong>.`);
+      }
+
+      debounceTimer = setTimeout(() => runSearch(query), debounceDelay);
+    }
+
+    function runSearch(query) {
+      const seq = ++requestSeq;
+      activeRequest = seq;
+      requests++;
+      updateMetrics();
+      setState('Searching', 'searching');
+      setResultsLoading(true, query);
+      startProgress(latency);
+      addLog(`Request #${seq} sent to server for <strong>“${query}”</strong>.`);
+
+      setTimeout(() => {
+        if (seq !== activeRequest) {
+          addLog(`Response #${seq} ignored because a newer request exists.`);
+          return;
+        }
+        setResultsLoading(false);
+        const elapsed = Math.round(performance.now() - lastKeyTime);
+        els.lastUpdate.textContent = `${elapsed} ms`;
+        setState('Updated', 'done');
+        renderResults(query, elapsed, seq);
+        addLog(`Results updated after <strong>${elapsed} ms</strong>.`);
+      }, latency);
+    }
+
+    function renderResults(query, elapsed, seq) {
+      const q = query.toLowerCase();
+      const matches = sampleResults
+        .filter(item => item.toLowerCase().includes(q) || q.length < 4)
+        .slice(0, 5);
+      const results = matches.length ? matches : sampleResults.slice(0, 4).map(item => `${query} — ${item}`);
+      els.results.innerHTML = results.map((item, i) => `
+        <div class="result-row">
+          <div>
+            <div class="result-title">${escapeHtml(item)}</div>
+            <div class="result-meta">Request #${seq} · Updated ${elapsed} ms after last keypress · Simulated result ${i + 1}</div>
+          </div>
+          <span class="result-badge">Result</span>
+        </div>
+      `).join('');
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/[&<>'"]/g, tag => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[tag]));
+    }
+
+    els.input.addEventListener('input', () => {
+      keystrokes++;
+      updateMetrics();
+      scheduleSearch();
+    });
+
+    els.latencyRange.addEventListener('input', e => {
+      latency = Number(e.target.value);
+      els.latencyLabel.textContent = `${latency} ms`;
+      updateTradeoffViz();
+      addLog(`Server latency changed to <strong>${latency} ms</strong>.`);
+    });
+
+    els.resetBtn.addEventListener('click', () => {
+      debounceTimer && clearTimeout(debounceTimer);
+      clearInterval(progressTimer);
+      requestSeq = 0; activeRequest = 0; keystrokes = 0; requests = 0; suppressed = 0;
+      els.input.value = '';
+      els.lastUpdate.textContent = '—';
+      els.timelineFill.style.width = '0%';
+      els.eventLog.innerHTML = '';
+      updateMetrics();
+      scheduleSearch();
+      addLog('Demo reset.');
+      els.input.focus();
+    });
+
+    initButtons();
+    updateTradeoffViz();
+    addLog('Demo loaded. Try typing a search term.');
+  </script>
+</body>
+</html>
