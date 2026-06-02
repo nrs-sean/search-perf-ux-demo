@@ -116,22 +116,25 @@
       align-items: center;
       justify-content: space-between;
       gap: 12px;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
+      width: 100%;
     }
 
     .preset-pills {
       display: flex;
-      gap: 6px;
+      gap: 8px;
       align-items: center;
+      justify-content: flex-end;
       flex-wrap: nowrap;
+      margin-left: auto;
     }
 
     .preset-pill {
-      border: 1px solid var(--border);
-      background: #f8fafc;
-      color: var(--ink);
+      border: 1.5px solid #8ec7ef;
+      background: #f0f9ff;
+      color: #0369a1;
       border-radius: 999px;
-      padding: 6px 10px;
+      padding: 6px 12px;
       font-size: 12px;
       line-height: 1;
       font-weight: 800;
@@ -141,9 +144,16 @@
     }
 
     .preset-pill:hover {
-      border-color: #bfc8d4;
-      background: #fff;
+      border-color: #38a3e8;
+      background: #e0f2fe;
       transform: translateY(-1px);
+    }
+
+    .preset-pill.active {
+      border-color: #0284c7;
+      background: #e0f2fe;
+      color: #075985;
+      box-shadow: inset 0 0 0 1px rgba(2, 132, 199, .08);
     }
 
 
@@ -537,15 +547,15 @@
               <div class="label-row">
                 <div class="label">Debounce delay</div>
                 <div class="preset-pills" aria-label="Preset combinations">
-                  <button class="preset-pill" type="button" id="presetNrs">Typical NRS</button>
+                  <button class="preset-pill" type="button" id="presetNrs">NRS - Typical</button>
                   <button class="preset-pill" type="button" id="presetEnterprise">Enterprise Standard</button>
                 </div>
               </div>
               <div class="segmented" id="debounceButtons"></div>
             </div>
             <div class="control-group latency-control">
-              <div class="label">Server latency after request: <span id="latencyLabel">250 ms</span></div>
-              <input id="latencyRange" type="range" min="50" max="10000" value="250" step="50" style="width:100%; margin-top:8px;" />
+              <div class="label">Server latency after request: <span id="latencyLabel">6000 ms</span></div>
+              <input id="latencyRange" type="range" min="50" max="10000" value="6000" step="50" style="width:100%; margin-top:8px;" />
               <div class="range-caption"><span>50 ms</span><span>5,000 ms</span><span>10,000 ms</span></div>
             </div>
           </div>
@@ -559,7 +569,7 @@
             <span class="search-icon">⌕</span>
           </div>
           <div class="hint-row">
-            <span id="modeHint">Mode: 200 ms debounce</span>
+            <span id="modeHint">Mode: 500 ms debounce</span>
             <span id="lastQueryHint">No query yet</span>
           </div>
 
@@ -630,12 +640,12 @@
         </div>
         <div class="metric">
           <div class="label">Server latency</div>
-          <div class="value" id="latencyMetric">250 ms</div>
+          <div class="value" id="latencyMetric">6000 ms</div>
           <div class="caption">Time after request is posted.</div>
         </div>
         <div class="metric">
           <div class="label">Expected wait</div>
-          <div class="value" id="expectedWait">450 ms</div>
+          <div class="value" id="expectedWait">6500 ms</div>
           <div class="caption">Debounce + server latency.</div>
         </div>
       </div>
@@ -659,8 +669,8 @@
 
   <script>
     const debounceOptions = [0, 200, 300, 500, 700, 1000];
-    let debounceDelay = 200;
-    let latency = 250;
+    let debounceDelay = 500;
+    let latency = 6000;
     let debounceTimer = null;
     let requestSeq = 0;
     let activeRequest = 0;
@@ -723,12 +733,19 @@
           debounceDelay = value;
           initButtons();
           updateTradeoffViz();
+          updatePresetPills();
           els.modeHint.textContent = `Mode: ${debounceDelay === 0 ? 'no debounce' : debounceDelay + ' ms debounce'}`;
           addLog(`Switched to <strong>${debounceDelay === 0 ? 'no debounce' : debounceDelay + ' ms debounce'}</strong>.`);
           scheduleSearch();
         });
         els.buttons.appendChild(btn);
       });
+    }
+
+
+    function updatePresetPills() {
+      els.presetNrs.classList.toggle('active', debounceDelay === 500 && latency === 6000);
+      els.presetEnterprise.classList.toggle('active', debounceDelay === 200 && latency === 800);
     }
 
 
@@ -741,6 +758,7 @@
       els.modeHint.textContent = `Mode: ${nextDebounce === 0 ? 'no debounce' : nextDebounce + ' ms debounce'}`;
       initButtons();
       updateTradeoffViz();
+      updatePresetPills();
       addLog(`Applied <strong>${label}</strong> preset: ${nextDebounce} ms debounce + ${nextLatency} ms server latency.`);
       scheduleSearch();
       els.input.focus();
@@ -891,6 +909,7 @@
       latency = Number(e.target.value);
       els.latencyLabel.textContent = `${latency} ms`;
       updateTradeoffViz();
+      updatePresetPills();
       addLog(`Server latency changed to <strong>${latency} ms</strong>.`);
     });
 
@@ -901,6 +920,13 @@
       debounceTimer && clearTimeout(debounceTimer);
       clearInterval(progressTimer);
       requestSeq = 0; activeRequest = 0; keystrokes = 0; requests = 0; suppressed = 0;
+      debounceDelay = 500;
+      latency = 6000;
+      els.latencyRange.value = '6000';
+      els.latencyLabel.textContent = '6000 ms';
+      els.modeHint.textContent = 'Mode: 500 ms debounce';
+      initButtons();
+      updatePresetPills();
       els.input.value = '';
       els.lastUpdate.textContent = '—';
       els.timelineFill.style.width = '0%';
@@ -913,7 +939,8 @@
 
     initButtons();
     updateTradeoffViz();
-    addLog('Demo loaded. Try typing a search term.');
+    updatePresetPills();
+    addLog('Demo loaded with the <strong>Typical NRS</strong> preset. Try typing a search term.');
   </script>
 </body>
 </html>
