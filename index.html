@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Search Debounce UX Prototype — App Positioned Under Controls</title>
+  <title>Search performance UX simulator</title>
   <style>
     :root {
       --bg: #f6f7f9;
@@ -538,6 +538,75 @@
     }
 
 
+
+    .label-with-info {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .info-icon {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 16px;
+      height: 16px;
+      border: 1px solid #bfc8d4;
+      border-radius: 999px;
+      color: var(--muted);
+      background: #fff;
+      font-size: 10px;
+      font-weight: 900;
+      line-height: 1;
+      cursor: help;
+    }
+
+    .info-icon::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      left: 50%;
+      bottom: calc(100% + 8px);
+      transform: translateX(-50%);
+      width: max-content;
+      max-width: 260px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      background: #172033;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.35;
+      text-transform: none;
+      letter-spacing: 0;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .15s ease, transform .15s ease;
+      z-index: 20;
+      box-shadow: 0 10px 24px rgba(23, 32, 51, .18);
+    }
+
+    .info-icon::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: calc(100% + 3px);
+      transform: translateX(-50%);
+      border: 5px solid transparent;
+      border-top-color: #172033;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .15s ease;
+      z-index: 21;
+    }
+
+    .info-icon:hover::after,
+    .info-icon:focus-visible::after,
+    .info-icon:hover::before,
+    .info-icon:focus-visible::before {
+      opacity: 1;
+    }
+
     .tile-header {
       display: flex;
       align-items: center;
@@ -629,7 +698,7 @@
   <main class="page">
     <section class="layout">
       <div>
-        <h1>Search debounce UX simulator</h1>
+        <h1>Search performance UX simulator</h1>
         <p class="lede">Type in the search box and adjust both debounce delay and server latency to see the tradeoff: debounce controls when the request starts; latency controls how long the server takes once the request is sent.</p>
         <section class="controls-card" aria-label="Prototype controls">
           <div class="stacked-controls">
@@ -675,10 +744,9 @@
       </section>
       </div>
       <aside class="right-rail">
-        <section class="takeaway header-takeaway collapsible is-collapsed">
+        <section class="takeaway header-takeaway">
           <div class="tile-header">
             <h2>UX takeaway</h2>
-            <button class="collapse-toggle" type="button" aria-label="Expand UX takeaway" aria-expanded="false"><span class="chevron">⌃</span></button>
           </div>
           <div class="tile-body">
             <p><strong>For server-backed typeahead, 150–250 ms is usually a good starting point.</strong> Past ~300 ms of debounce, users begin to feel the delay; with high server latency, even a “good” debounce may feel slow.</p>
@@ -699,7 +767,7 @@
                 <strong id="waitLabel">450</strong>
               </div>
               <div class="bar-row">
-                <span>Request load</span>
+                <span class="label-with-info">Request load <span class="info-icon" tabindex="0" aria-label="Request load: a measure of server requests; lower debounce equals more requests." data-tooltip="a measure of server requests; lower debounce = more requests.">i</span></span>
                 <div class="bar-track"><div class="bar-fill" id="loadBar"></div></div>
                 <strong id="loadLabel">40%</strong>
               </div>
