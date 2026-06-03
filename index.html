@@ -67,6 +67,23 @@
       margin: 0;
     }
 
+    .byline {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.4;
+      margin: 8px 0 0;
+    }
+
+    .byline a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    .byline a:hover {
+      text-decoration: underline;
+    }
+
     .controls-card, .panel {
       background: rgba(255,255,255,.88);
       backdrop-filter: blur(10px);
@@ -700,6 +717,7 @@
       <div>
         <h1>Search performance UX simulator</h1>
         <p class="lede">Type in the search box and adjust both debounce delay and server latency to see the tradeoff: debounce controls when the request starts; latency controls how long the server takes once the request is sent.</p>
+        <p class="byline">by <a href="mailto:smalone@netroadshow.com">Sean Malone</a></p>
         <section class="controls-card" aria-label="Prototype controls">
           <div class="stacked-controls">
             <div class="control-group">
