@@ -493,7 +493,7 @@
     .bar-track {
       background: #eef1f5;
       border-radius: 999px;
-      height: 13px;
+      height: 28px;
       overflow: hidden;
     }
 
@@ -503,6 +503,7 @@
       background: var(--accent);
       border-radius: inherit;
       transition: width .22s ease;
+      min-width: 28px;
     }
 
     .event-log {
@@ -779,14 +780,18 @@
       border-top: 1px solid var(--border);
     }
 
-    .funnel-title {
+    .metric-group-header {
+      margin-bottom: 12px;
+    }
+
+    .metric-group-title {
       color: var(--ink);
       font-size: 13px;
       font-weight: 900;
       margin-bottom: 8px;
     }
 
-    .funnel-explainer {
+    .metric-group-explainer {
       font-size: 13px;
       margin-bottom: 12px;
     }
@@ -896,7 +901,10 @@
             <button class="collapse-toggle" type="button" aria-label="Collapse What this demonstrates" aria-expanded="true"><span class="chevron">⌃</span></button>
           </div>
           <div class="tile-body">
-            <p class="explainer">Debounce delay and server latency compound. Debounce is the intentional wait before posting; server latency is the unavoidable wait after posting. The user feels the sum of both.</p>
+            <div class="metric-group-header">
+              <div class="label-with-info metric-group-title">Performance tradeoff <span class="info-icon has-rich-tooltip" tabindex="0" aria-label="Response-time guidance source">i<span class="info-tooltip">Qualitative thresholds are loosely based on Jakob Nielsen / NN/g response-time guidance: 0.1s feels instant, 1s preserves flow, and 10s risks attention loss. <a href="https://www.nngroup.com/articles/response-times-3-important-limits/" target="_blank" rel="noopener noreferrer">Read source</a>.</span></span></div>
+              <p class="explainer metric-group-explainer">Debounce delay and server latency compound. Debounce is the intentional wait before posting; server latency is the unavoidable wait after posting. The user feels the sum of both.</p>
+            </div>
             <div class="bars">
               <div class="bar-row">
                 <span>Perceived wait</span>
@@ -915,8 +923,8 @@
               </div>
             </div>
             <div class="funnel-inline">
-              <div class="label-with-info funnel-title">Willingness to wait <span class="info-icon has-rich-tooltip" tabindex="0" aria-label="Willingness to wait source">i<span class="info-tooltip">Illustrative funnel based on published response-time guidance: NN/g’s 1s and 10s thresholds, plus Forrester/Akamai’s finding that 40% of consumers wait no more than 3s for a page to render. <a href="https://www.ir.akamai.com/news-releases/news-release-details/akamai-reveals-2-seconds-new-threshold-acceptability-ecommerce" target="_blank" rel="noopener noreferrer">Akamai/Forrester source</a>.</span></span></div>
-              <p class="explainer funnel-explainer">Starting with 100 users, this estimates how many may still be willing to wait as total time to first results increases.</p>
+              <div class="label-with-info metric-group-title">Willingness to wait <span class="info-icon has-rich-tooltip" tabindex="0" aria-label="Willingness to wait source">i<span class="info-tooltip">Illustrative funnel based on published response-time guidance: NN/g’s 1s and 10s thresholds, plus Forrester/Akamai’s finding that 40% of consumers wait no more than 3s for a page to render. <a href="https://www.ir.akamai.com/news-releases/news-release-details/akamai-reveals-2-seconds-new-threshold-acceptability-ecommerce" target="_blank" rel="noopener noreferrer">Akamai/Forrester source</a>.</span></span></div>
+              <p class="explainer metric-group-explainer">Starting with 100 users, this estimates how many may still be willing to wait as total time to first results increases.</p>
               <div class="funnel">
                 <div class="funnel-row">
                   <span>Start</span>
