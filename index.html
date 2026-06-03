@@ -182,6 +182,29 @@
       box-shadow: inset 0 0 0 1px rgba(249, 115, 22, .10);
     }
 
+
+    .preset-with-info {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      overflow: visible;
+    }
+
+    .preset-info {
+      width: 15px;
+      height: 15px;
+      font-size: 9px;
+      border-color: currentColor;
+      color: currentColor;
+      background: rgba(255,255,255,.46);
+    }
+
+    .preset-info .info-tooltip {
+      color: #fff;
+      font-weight: 700;
+      width: 230px;
+    }
+
     .reset-pill {
       border: 1px solid var(--border);
       background: #fff;
@@ -846,7 +869,7 @@
       <div>
         <h1>Search performance UX simulator</h1>
         <p class="lede">Type in the search box and adjust both debounce delay and server latency to see the tradeoff: debounce controls when the request starts; latency controls how long the server takes once the request is sent.</p>
-        <p class="byline">by <a href="mailto:smalone@netroadshow.com">Sean Malone</a></p>
+        <p class="byline">by Sean Malone</p>
         <section class="controls-card" aria-label="Prototype controls">
           <div class="stacked-controls">
             <div class="control-group">
@@ -854,7 +877,7 @@
                 <div class="label">Debounce delay</div>
                 <div class="header-actions" aria-label="Preset and reset controls">
                   <div class="preset-pills" aria-label="Preset combinations">
-                    <button class="preset-pill" type="button" id="presetNrs">NRS - Typical</button>
+                    <button class="preset-pill preset-with-info" type="button" id="presetNrs">EH today <span class="info-icon preset-info" tabindex="0" aria-label="EH today observed performance metrics">i<span class="info-tooltip">FCP: 5.3s<br>Speed Index: 5.3s<br>LCP: 5.8s<br>TBT: 110.0ms<br>CLS score: 0.0<br>TTI: 6.5s<br>Observed 1: 16.22s<br>Observed 2: 17.90s<br>Observed 3: 17.10s<br>Observed avg: 17.07s<br>TTI-O: 17.1s</span></span></button>
                     <button class="preset-pill" type="button" id="presetEnterprise">Enterprise Standard</button>
                   </div>
                   <button class="reset-pill" id="resetBtn" type="button">Reset demo</button>
@@ -1329,7 +1352,7 @@
       addLog(`Server latency changed to <strong>${latency} ms</strong>.`);
     });
 
-    els.presetNrs.addEventListener('click', () => applyPreset('Typical NRS', 500, 6000));
+    els.presetNrs.addEventListener('click', () => applyPreset('EH today', 500, 6000));
     els.presetEnterprise.addEventListener('click', () => applyPreset('Enterprise Standard', 200, 800));
 
     els.resetBtn.addEventListener('click', () => {
@@ -1357,7 +1380,7 @@
     initButtons();
     updateTradeoffViz();
     updatePresetPills();
-    addLog('Demo loaded with the <strong>Typical NRS</strong> preset. Try typing a search term.');
+    addLog('Demo loaded with the <strong>EH today</strong> preset. Try typing a search term.');
   </script>
 </body>
 </html>
