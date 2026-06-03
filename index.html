@@ -296,6 +296,54 @@
       }
     }
 
+
+    .app-preset-control {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      overflow: visible;
+    }
+
+    .app-select {
+      appearance: none;
+      border: 1.5px solid #fdba74;
+      background: #fff7ed;
+      color: #ea580c;
+      border-radius: 999px;
+      padding: 6px 30px 6px 12px;
+      font-size: 12px;
+      line-height: 1;
+      font-weight: 800;
+      max-width: 220px;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: .15s ease;
+      background-image:
+        linear-gradient(45deg, transparent 50%, currentColor 50%),
+        linear-gradient(135deg, currentColor 50%, transparent 50%);
+      background-position:
+        calc(100% - 16px) 50%,
+        calc(100% - 11px) 50%;
+      background-size: 5px 5px, 5px 5px;
+      background-repeat: no-repeat;
+    }
+
+    .app-select:hover {
+      border-color: #fb923c;
+      background-color: #ffedd5;
+      transform: translateY(-1px);
+    }
+
+    .app-select:focus {
+      outline: none;
+      border-color: #f97316;
+      box-shadow: 0 0 0 3px rgba(249, 115, 22, .18);
+    }
+
+    .app-metrics-info {
+      flex: 0 0 auto;
+    }
+
     .preset-with-info {
       display: inline-flex;
       align-items: center;
@@ -990,40 +1038,10 @@
                 <div class="label">Debounce delay</div>
                 <div class="header-actions" aria-label="Preset and reset controls">
                   <div class="preset-pills" aria-label="Preset combinations">
-                    <button class="preset-pill preset-with-info" type="button" id="presetNrs">EH today <span class="info-icon preset-info has-rich-tooltip" tabindex="0" aria-label="EH today observed performance metrics">i<span class="info-tooltip metrics-tooltip">
-                      <div class="metrics-tooltip-title">EH today observed performance metrics</div>
-                      <div class="metrics-tooltip-list" aria-label="EH today observed performance metrics">
-                        <div class="metric-tooltip-row">
-                          <div class="metric-name">First Contentful Paint (FCP)</div>
-                          <div class="metric-value">5.3</div>
-                        </div>
-                        <div class="metric-tooltip-row">
-                          <div class="metric-name">Speed Index</div>
-                          <div class="metric-value">5.3</div>
-                        </div>
-                        <div class="metric-tooltip-row">
-                          <div class="metric-name">Largest Contentful Paint (LCP)</div>
-                          <div class="metric-value">5.8</div>
-                        </div>
-                        <div class="metric-tooltip-row good">
-                          <div class="metric-name">Total Blocking Time (TBT)</div>
-                          <div class="metric-value">110.0</div>
-                        </div>
-                        <div class="metric-tooltip-row good">
-                          <div class="metric-name">Cumulative Layout Shift (CLS score)</div>
-                          <div class="metric-value">0.0</div>
-                        </div>
-                        <div class="metric-tooltip-row">
-                          <div class="metric-name">Time to Interactive (TTI)</div>
-                          <div class="metric-value">6.5</div>
-                        </div>
-                        <div class="metric-tooltip-row">
-                          <div class="metric-name">Time to Interactive Observed (TTI-O)</div>
-                          <div class="metric-value">17.1</div>
-                        </div>
-                      </div>
-                      <div class="metrics-tooltip-note">Observed runs: 16.22s, 17.90s, 17.10s · Observed avg: 17.07s</div>
-                    </span></span></button>
+                    <div class="app-preset-control">
+                      <select id="appPresetSelect" class="app-select" aria-label="Select app performance preset"></select>
+                      <span class="info-icon preset-info has-rich-tooltip app-metrics-info" tabindex="0" aria-label="Selected app observed performance metrics">i<span class="info-tooltip metrics-tooltip" id="appMetricsTooltip"></span></span>
+                    </div>
                     <button class="preset-pill" type="button" id="presetEnterprise">Enterprise Standard</button>
                   </div>
                   <button class="reset-pill" id="resetBtn" type="button">Reset demo</button>
@@ -1032,8 +1050,8 @@
               <div class="segmented" id="debounceButtons"></div>
             </div>
             <div class="control-group latency-control">
-              <div class="label">Server latency after request: <span id="latencyLabel" class="latency-value">6000 ms</span></div>
-              <input id="latencyRange" type="range" min="50" max="10000" value="6000" step="50" style="width:100%; margin-top:8px;" />
+              <div class="label">Server latency after request: <span id="latencyLabel" class="latency-value">6500 ms</span></div>
+              <input id="latencyRange" type="range" min="50" max="10000" value="6500" step="50" style="width:100%; margin-top:8px;" />
               <div class="range-caption"><span>50 ms</span><span>5,000 ms</span><span>10,000 ms</span></div>
             </div>
           </div>
@@ -1156,12 +1174,12 @@
           </div>
           <div class="metric">
             <div class="label">Server latency</div>
-            <div class="value" id="latencyMetric">6000 ms</div>
+            <div class="value" id="latencyMetric">6500 ms</div>
             <div class="caption">Time after request is posted.</div>
           </div>
           <div class="metric">
             <div class="label">Expected wait</div>
-            <div class="value" id="expectedWait">6500 ms</div>
+            <div class="value" id="expectedWait">7000 ms</div>
             <div class="caption">Debounce + server latency.</div>
           </div>
         </div>
@@ -1192,7 +1210,7 @@
   <script>
     const debounceOptions = [0, 50, 200, 300, 500, 700, 1000];
     let debounceDelay = 500;
-    let latency = 6000;
+    let latency = 6500;
     let debounceTimer = null;
     let requestSeq = 0;
     let activeRequest = 0;
@@ -1215,6 +1233,8 @@
       'Capital markets event setup'
     ];
 
+    const appPerformanceData = [{"category":"P1","name":"EH List View","displayName":"EH today \u2014 EH List View","fcp":5.3,"speedIndex":5.3,"lcp":5.8,"tbt":110.0,"cls":0.005,"tti":6.5,"observed1":16.22,"observed2":17.9,"observed3":17.1,"observedAvg":17.07333333,"ttiO":17.07333333},{"category":"P1","name":"MyNRS-PricedDealDocs","fcp":0.8,"speedIndex":6.0,"lcp":2.9,"tbt":0.0,"cls":0.03,"tti":2.9,"observed1":32.72,"observed2":35.1,"observed3":30.0,"observedAvg":32.60666667,"ttiO":32.60666667},{"category":"P1","name":"EH Event Detail View","fcp":5.2,"speedIndex":5.2,"lcp":6.0,"tbt":120.0,"cls":0.056,"tti":6.2,"observed1":6.79,"observed2":6.56,"observed3":6.8,"observedAvg":6.716666667,"ttiO":6.716666667},{"category":"P1","name":"MyNRS-Expired","fcp":0.9,"speedIndex":5.6,"lcp":3.1,"tbt":0.0,"cls":0.031,"tti":3.1,"observed1":32.67,"observed2":34.22,"observed3":32.92,"observedAvg":33.27,"ttiO":33.27},{"category":"P1","name":"MyNRS-Archived","fcp":0.9,"speedIndex":4.7,"lcp":3.2,"tbt":0.0,"cls":0.031,"tti":3.2,"observed1":31.92,"observed2":34.29,"observed3":33.14,"observedAvg":33.11666667,"ttiO":33.11666667},{"category":"P1","name":"MyNRS-Library","fcp":0.9,"speedIndex":2.2,"lcp":3.6,"tbt":0.0,"cls":0.031,"tti":3.6,"observed1":3.7,"observed2":3.92,"observed3":3.83,"observedAvg":3.816666667,"ttiO":3.816666667},{"category":"P1","name":"MyNRS-Active","fcp":0.8,"speedIndex":2.6,"lcp":3.1,"tbt":0.0,"cls":0.031,"tti":3.1,"observed1":2.1,"observed2":2.22,"observed3":1.81,"observedAvg":2.043333333,"ttiO":2.043333333},{"category":"P1","name":"MyNRS0-Live Events","fcp":0.9,"speedIndex":3.1,"lcp":3.2,"tbt":0.0,"cls":0.073,"tti":3.2,"observed1":1.41,"observed2":1.47,"observed3":1.02,"observedAvg":1.3,"ttiO":1.3},{"category":"P1","name":"RFN-Investor View","fcp":0.88,"speedIndex":1.176,"lcp":3.396,"tbt":0.0,"cls":0.0,"tti":3.421,"observed1":3.83,"observed2":3.6,"observed3":3.18,"observedAvg":3.536666667,"ttiO":3.536666667},{"category":"P1","name":"RFN-Project Hub","fcp":5.6,"speedIndex":5.6,"lcp":6.2,"tbt":40.0,"cls":0.277,"tti":6.2,"observed1":3.7,"observed2":3.0,"observed3":3.35,"observedAvg":3.35,"ttiO":3.35},{"category":"P1","name":"RFN-Project Detail","fcp":5.6,"speedIndex":5.6,"lcp":6.1,"tbt":30.0,"cls":0.115,"tti":6.1,"observed1":6.03,"observed2":6.28,"observed3":5.69,"observedAvg":6.0,"ttiO":6.0},{"category":"P2","name":"Dataroom"},{"category":"P2","name":"EH OM Admin Settings"},{"category":"P2","name":"EH Manage Users"},{"category":"P2","name":"Show Management"},{"category":"P2","name":"Analytics landing/container"},{"category":"P2","name":"Event Dashboard"},{"category":"P2","name":"Event Viewer"},{"category":"P2","name":"POF"},{"category":"P2","name":"Retail Roadshow"}];
+
     const els = {
       buttons: document.getElementById('debounceButtons'),
       input: document.getElementById('searchInput'),
@@ -1235,7 +1255,8 @@
       overlayText: document.getElementById('overlayText'),
       eventLog: document.getElementById('eventLog'),
       resetBtn: document.getElementById('resetBtn'),
-      presetNrs: document.getElementById('presetNrs'),
+      appPresetSelect: document.getElementById('appPresetSelect'),
+      appMetricsTooltip: document.getElementById('appMetricsTooltip'),
       presetEnterprise: document.getElementById('presetEnterprise'),
       waitBar: document.getElementById('waitBar'),
       loadBar: document.getElementById('loadBar'),
@@ -1284,11 +1305,105 @@
 
 
     function updatePresetPills() {
-      els.presetNrs.classList.toggle('active', debounceDelay === 500 && latency === 6000);
       els.presetEnterprise.classList.toggle('active', debounceDelay === 200 && latency === 800);
     }
 
 
+
+
+    function formatMetric(value, digits = 1) {
+      if (value === undefined || value === null || value === '') return '—';
+      const numeric = Number(value);
+      if (Number.isNaN(numeric)) return '—';
+      return numeric.toFixed(digits).replace(/\.0$/, '');
+    }
+
+    function metricCell(label, value, isGood = false, digits = 1) {
+      return `
+        <div class="metric-tooltip-row ${isGood ? 'good' : ''}">
+          <div class="metric-name">${label}</div>
+          <div class="metric-value">${formatMetric(value, digits)}</div>
+        </div>
+      `;
+    }
+
+    function appHasPerformanceData(app) {
+      return Number.isFinite(Number(app.tti));
+    }
+
+    function latencyFromApp(app) {
+      return Math.round((Number(app.tti) * 1000) / 50) * 50;
+    }
+
+    function updateAppMetricsTooltip(app) {
+      if (!appHasPerformanceData(app)) {
+        els.appMetricsTooltip.innerHTML = `
+          <div class="metrics-tooltip-title">${app.name}</div>
+          <div class="metrics-tooltip-note">No recorded performance values are available for this app in the uploaded ranking sheet.</div>
+        `;
+        return;
+      }
+
+      els.appMetricsTooltip.innerHTML = `
+        <div class="metrics-tooltip-title">${app.displayName || app.name} observed performance metrics</div>
+        <div class="metrics-tooltip-list" aria-label="${app.name} observed performance metrics">
+          ${metricCell('First Contentful Paint (FCP)', app.fcp)}
+          ${metricCell('Speed Index', app.speedIndex)}
+          ${metricCell('Largest Contentful Paint (LCP)', app.lcp)}
+          ${metricCell('Total Blocking Time (TBT)', app.tbt, Number(app.tbt) <= 200)}
+          ${metricCell('Cumulative Layout Shift (CLS score)', app.cls, Number(app.cls) <= 0.1, 3)}
+          ${metricCell('Time to Interactive (TTI)', app.tti)}
+          ${metricCell('Time to Interactive Observed (TTI-O)', app.ttiO)}
+        </div>
+        <div class="metrics-tooltip-note">Observed runs: ${formatMetric(app.observed1, 2)}s, ${formatMetric(app.observed2, 2)}s, ${formatMetric(app.observed3, 2)}s · Observed avg: ${formatMetric(app.observedAvg, 2)}s</div>
+      `;
+    }
+
+    function initAppSelector() {
+      const groups = {};
+      appPerformanceData.forEach(app => {
+        groups[app.category] = groups[app.category] || [];
+        groups[app.category].push(app);
+      });
+
+      els.appPresetSelect.innerHTML = '';
+      Object.entries(groups).forEach(([category, apps]) => {
+        const group = document.createElement('optgroup');
+        group.label = category;
+        apps.forEach(app => {
+          const option = document.createElement('option');
+          option.value = app.name;
+          option.textContent = app.displayName || app.name;
+          if (!appHasPerformanceData(app)) {
+            option.textContent = `${app.name} — no data`;
+            option.disabled = true;
+          }
+          group.appendChild(option);
+        });
+        els.appPresetSelect.appendChild(group);
+      });
+
+      els.appPresetSelect.value = 'EH List View';
+      updateAppMetricsTooltip(appPerformanceData.find(app => app.name === 'EH List View'));
+    }
+
+    function applyAppPreset(appName) {
+      const app = appPerformanceData.find(item => item.name === appName);
+      if (!app || !appHasPerformanceData(app)) return;
+
+      debounceDelay = 500;
+      latency = latencyFromApp(app);
+      els.latencyRange.value = String(latency);
+      els.latencyLabel.textContent = `${latency} ms`;
+      els.modeHint.textContent = 'Mode: 500 ms debounce';
+      initButtons();
+      updateTradeoffViz();
+      updatePresetPills();
+      updateAppMetricsTooltip(app);
+      addLog(`Applied <strong>${app.displayName || app.name}</strong> preset: 500 ms debounce + ${latency} ms latency from TTI.`);
+      scheduleSearch();
+      els.input.focus();
+    }
 
     function applyPreset(label, nextDebounce, nextLatency) {
       debounceDelay = nextDebounce;
@@ -1498,7 +1613,7 @@
       addLog(`Server latency changed to <strong>${latency} ms</strong>.`);
     });
 
-    els.presetNrs.addEventListener('click', () => applyPreset('EH today', 500, 6000));
+    els.appPresetSelect.addEventListener('change', e => applyAppPreset(e.target.value));
     els.presetEnterprise.addEventListener('click', () => applyPreset('Enterprise Standard', 200, 800));
 
     els.resetBtn.addEventListener('click', () => {
@@ -1506,10 +1621,12 @@
       clearInterval(progressTimer);
       requestSeq = 0; activeRequest = 0; keystrokes = 0; requests = 0; suppressed = 0;
       debounceDelay = 500;
-      latency = 6000;
-      els.latencyRange.value = '6000';
-      els.latencyLabel.textContent = '6000 ms';
+      latency = 6500;
+      els.latencyRange.value = '6500';
+      els.latencyLabel.textContent = '6500 ms';
       els.modeHint.textContent = 'Mode: 500 ms debounce';
+      els.appPresetSelect.value = 'EH List View';
+      updateAppMetricsTooltip(appPerformanceData.find(app => app.name === 'EH List View'));
       initButtons();
       updatePresetPills();
       els.input.value = '';
@@ -1523,10 +1640,11 @@
     });
 
     initCollapsibles();
+    initAppSelector();
     initButtons();
     updateTradeoffViz();
     updatePresetPills();
-    addLog('Demo loaded with the <strong>EH today</strong> preset. Try typing a search term.');
+    addLog('Demo loaded with the <strong>EH today — EH List View</strong> preset. Try typing a search term.');
   </script>
 </body>
 </html>
