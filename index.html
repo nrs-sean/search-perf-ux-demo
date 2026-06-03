@@ -1223,6 +1223,55 @@
       padding-right: 0;
     }
 
+    .combined-funnel-row {
+      display: grid;
+      grid-template-columns: 96px 1fr 52px;
+      gap: 10px;
+      align-items: center;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .combined-funnel-track {
+      height: 28px;
+      background: #eef1f5;
+      border-radius: 999px;
+      overflow: hidden;
+      display: flex;
+    }
+
+    .combined-funnel-segment {
+      height: 100%;
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 900;
+      transition: width .22s ease;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    .combined-funnel-segment.dropoff {
+      background: #dc2626;
+      justify-content: flex-start;
+      padding-left: 10px;
+    }
+
+    .combined-funnel-segment.retain {
+      background: #16a34a;
+      justify-content: flex-end;
+      padding-right: 10px;
+    }
+
+    .combined-funnel-segment.hide-inbar-value {
+      color: transparent;
+      padding-left: 0;
+      padding-right: 0;
+    }
+
     .bar-fill.metric-good { background: #16a34a; }
     .bar-fill.metric-ok { background: #84cc16; }
     .bar-fill.metric-warn { background: #f59e0b; }
@@ -1389,15 +1438,18 @@
                   <div class="funnel-track"><div class="funnel-fill metric-good" id="funnelStart" style="width:100%;">100%</div></div>
                   <strong>100%</strong>
                 </div>
-                <div class="funnel-row">
-                  <span>Drop-off</span>
-                  <div class="funnel-track"><div class="funnel-fill" id="funnelDropped">—</div></div>
-                  <strong id="funnelDroppedLabel">—</strong>
-                </div>
-                <div class="funnel-row">
-                  <span>Retain</span>
-                  <div class="funnel-track"><div class="funnel-fill" id="funnelRetained">—</div></div>
+                <div class="combined-funnel-row">
+                  <span>Retention</span>
+                  <div class="combined-funnel-track" aria-label="Drop-off and retained share">
+                    <div class="combined-funnel-segment dropoff" id="funnelDropped">—</div>
+                    <div class="combined-funnel-segment retain" id="funnelRetained">—</div>
+                  </div>
                   <strong id="funnelRetainedLabel">—</strong>
+                </div>
+                <div class="funnel-row" style="display:none;">
+                  <span>Drop-off</span>
+                  <div class="funnel-track"></div>
+                  <strong id="funnelDroppedLabel">—</strong>
                 </div>
               </div>
               <p class="funnel-note" id="funnelNote">Adjust debounce and server latency to model the effect on willingness to wait.</p>
@@ -1908,17 +1960,18 @@
       const tone = retained >= 90 ? 'metric-good' : retained >= 70 ? 'metric-ok' : retained >= 50 ? 'metric-warn' : 'metric-bad';
       const droppedTone = dropped <= 10 ? 'metric-good' : dropped <= 30 ? 'metric-ok' : dropped <= 50 ? 'metric-warn' : 'metric-bad';
 
+      els.funnelDropped.style.width = `${dropped}%`;
+      els.funnelDropped.textContent = dropped >= 18 ? `Drop-off ${dropped}%` : '';
+      els.funnelDropped.classList.toggle('hide-inbar-value', dropped < 18);
+
       els.funnelRetained.style.width = `${retained}%`;
-      els.funnelRetained.textContent = retained >= 18 ? `${retained}%` : '';
+      els.funnelRetained.textContent = retained >= 18 ? `Retain ${retained}%` : '';
       els.funnelRetainedLabel.textContent = `${retained}%`;
       els.funnelRetained.classList.toggle('hide-inbar-value', retained < 18);
-      setMetricColor(els.funnelRetained, tone);
 
-      els.funnelDropped.style.width = `${Math.max(4, dropped)}%`;
-      els.funnelDropped.textContent = dropped >= 18 ? `${dropped}%` : '';
-      els.funnelDroppedLabel.textContent = `${dropped}%`;
-      els.funnelDropped.classList.toggle('hide-inbar-value', dropped < 18);
-      setMetricColor(els.funnelDropped, droppedTone);
+      if (els.funnelDroppedLabel) {
+        els.funnelDroppedLabel.textContent = `${dropped}%`;
+      }
 
       let note = 'At or under about 1 second, flow is generally preserved.';
       if (totalWait > 1000) note = 'Past 1 second, users are more likely to notice the wait.';
