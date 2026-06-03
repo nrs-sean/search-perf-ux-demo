@@ -161,9 +161,9 @@
     }
 
     .preset-pill {
-      border: 1.5px solid #fdba74;
-      background: #fff7ed;
-      color: #ea580c;
+      border: 1.5px solid #fed7aa;
+      background: #fffaf5;
+      color: #c46a2b;
       border-radius: 999px;
       padding: 6px 12px;
       font-size: 12px;
@@ -176,15 +176,16 @@
 
     .preset-pill:hover {
       border-color: #fb923c;
-      background: #ffedd5;
+      background: #fff7ed;
+      color: #ea580c;
       transform: translateY(-1px);
     }
 
     .preset-pill.active {
       border-color: #f97316;
-      background: #ffedd5;
-      color: #9a3412;
-      box-shadow: inset 0 0 0 1px rgba(249, 115, 22, .10);
+      background: #f97316;
+      color: #fff;
+      box-shadow: 0 8px 18px rgba(249, 115, 22, .22);
     }
 
 
@@ -304,20 +305,34 @@
       overflow: visible;
     }
 
+    .app-preset-control.is-inactive .app-select {
+      border-color: #fed7aa;
+      background: #fffaf5;
+      color: #c46a2b;
+      box-shadow: none;
+    }
+
+    .app-preset-control.is-inactive .preset-info {
+      border-color: #fed7aa;
+      color: #c46a2b;
+      background: #fffaf5;
+    }
+
     .app-select {
       appearance: none;
-      border: 1.5px solid #fdba74;
-      background: #fff7ed;
-      color: #ea580c;
+      border: 1.5px solid #f97316;
+      background: #f97316;
+      color: #fff;
       border-radius: 999px;
       padding: 6px 30px 6px 12px;
       font-size: 12px;
       line-height: 1;
       font-weight: 800;
-      max-width: 220px;
+      max-width: 245px;
       white-space: nowrap;
       cursor: pointer;
       transition: .15s ease;
+      box-shadow: 0 8px 18px rgba(249, 115, 22, .22);
       background-image:
         linear-gradient(45deg, transparent 50%, currentColor 50%),
         linear-gradient(135deg, currentColor 50%, transparent 50%);
@@ -329,15 +344,15 @@
     }
 
     .app-select:hover {
-      border-color: #fb923c;
-      background-color: #ffedd5;
+      border-color: #ea580c;
+      background-color: #ea580c;
       transform: translateY(-1px);
     }
 
     .app-select:focus {
       outline: none;
-      border-color: #f97316;
-      box-shadow: 0 0 0 3px rgba(249, 115, 22, .18);
+      border-color: #ea580c;
+      box-shadow: 0 0 0 3px rgba(249, 115, 22, .18), 0 8px 18px rgba(249, 115, 22, .22);
     }
 
     .app-metrics-info {
@@ -352,12 +367,17 @@
     }
 
     .preset-info {
-      width: 15px;
-      height: 15px;
-      font-size: 9px;
-      border-color: currentColor;
-      color: currentColor;
-      background: rgba(255,255,255,.46);
+      width: 17px;
+      height: 17px;
+      font-size: 10px;
+      border-color: #f97316;
+      color: #f97316;
+      background: #fff7ed;
+      box-shadow: 0 1px 0 rgba(23, 32, 51, .04);
+    }
+
+    .app-preset-control .preset-info {
+      margin-left: 1px;
     }
 
     .preset-info .info-tooltip {
@@ -426,6 +446,19 @@
       border-color: var(--accent);
       color: #fff;
       box-shadow: 0 10px 22px rgba(49, 94, 251, .22);
+    }
+
+    .segmented.is-disabled button:not(.active) {
+      opacity: .38;
+      color: #8a94a3;
+      background: #f5f7fa;
+      border-color: #e3e8ef;
+      box-shadow: none;
+    }
+
+    .segmented.is-disabled button:not(.active):hover {
+      transform: none;
+      border-color: #e3e8ef;
     }
 
     .ghost-button { color: var(--muted); min-height: 42px; align-self: end; }
@@ -1040,7 +1073,7 @@
                   <div class="preset-pills" aria-label="Preset combinations">
                     <div class="app-preset-control">
                       <select id="appPresetSelect" class="app-select" aria-label="Select app performance preset"></select>
-                      <span class="info-icon preset-info has-rich-tooltip app-metrics-info" tabindex="0" aria-label="Selected app observed performance metrics">i<span class="info-tooltip metrics-tooltip" id="appMetricsTooltip"></span></span>
+                      <span class="info-icon preset-info has-rich-tooltip app-metrics-info" tabindex="0" aria-label="Performance metrics for the selected app">i<span class="info-tooltip metrics-tooltip" id="appMetricsTooltip"></span></span>
                     </div>
                     <button class="preset-pill" type="button" id="presetEnterprise">Enterprise Standard</button>
                   </div>
@@ -1255,6 +1288,7 @@
       overlayText: document.getElementById('overlayText'),
       eventLog: document.getElementById('eventLog'),
       resetBtn: document.getElementById('resetBtn'),
+      appPresetControl: document.querySelector('.app-preset-control'),
       appPresetSelect: document.getElementById('appPresetSelect'),
       appMetricsTooltip: document.getElementById('appMetricsTooltip'),
       presetEnterprise: document.getElementById('presetEnterprise'),
@@ -1301,9 +1335,11 @@
       });
       els.buttons.appendChild(notApplicableBtn);
 
+      els.buttons.classList.toggle('is-disabled', debounceDelay === null);
+
       debounceOptions.forEach(value => {
         const btn = document.createElement('button');
-        btn.textContent = value === 0 ? 'None' : `${value} ms`;
+        btn.textContent = `${value} ms`;
         btn.className = value === debounceDelay ? 'active' : '';
         btn.addEventListener('click', () => {
           debounceDelay = value;
@@ -1320,7 +1356,9 @@
 
 
     function updatePresetPills() {
-      els.presetEnterprise.classList.toggle('active', debounceDelay === 200 && latency === 800);
+      const enterpriseActive = debounceDelay === 200 && latency === 800;
+      els.presetEnterprise.classList.toggle('active', enterpriseActive);
+      els.appPresetControl.classList.toggle('is-inactive', enterpriseActive);
     }
 
 
