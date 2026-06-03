@@ -93,11 +93,16 @@
     }
 
     .app-panel {
+      position: relative;
+      z-index: 1;
       box-shadow: var(--shadow);
       margin-top: 18px;
     }
 
     .controls-card {
+      position: relative;
+      z-index: 50;
+      overflow: visible;
       padding: 16px;
       display: grid;
       grid-template-columns: minmax(0, 1fr);
@@ -185,15 +190,16 @@
 
 
     .metrics-tooltip {
-      width: 520px;
-      max-width: min(520px, calc(100vw - 48px));
+      width: 460px;
+      max-width: min(460px, calc(100vw - 48px));
       padding: 14px;
       overflow: visible;
       border-radius: 14px;
       background: #fff;
       color: var(--ink);
       border: 1px solid #d9dee7;
-      box-shadow: 0 14px 34px rgba(23, 32, 51, .22);
+      box-shadow: 0 18px 44px rgba(23, 32, 51, .28);
+      z-index: 9999;
     }
 
     .metrics-tooltip-title {
@@ -204,46 +210,47 @@
       letter-spacing: -.01em;
     }
 
-    .metrics-tooltip-grid {
+    .metrics-tooltip-list {
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 8px;
+      gap: 6px;
     }
 
-    .metric-tooltip-cell {
+    .metric-tooltip-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 76px;
+      align-items: center;
       border: 1px solid #d9dee7;
       border-radius: 10px;
       overflow: hidden;
       background: #fff;
+    }
+
+    .metric-tooltip-row .metric-name {
+      padding: 9px 10px;
+      color: #0f172a;
+      font-size: 12px;
+      line-height: 1.25;
+      font-weight: 900;
+      text-align: left;
+      background: #fff;
       min-width: 0;
     }
 
-    .metric-tooltip-cell .metric-name {
-      min-height: 58px;
+    .metric-tooltip-row .metric-value {
+      align-self: stretch;
       display: flex;
-      align-items: flex-end;
+      align-items: center;
       justify-content: center;
-      text-align: center;
-      padding: 8px 6px;
-      color: #0f172a;
-      font-size: 10px;
-      line-height: 1.15;
-      font-weight: 900;
-      background: #fff;
-    }
-
-    .metric-tooltip-cell .metric-value {
-      text-align: center;
-      padding: 8px 6px;
+      padding: 9px 8px;
       color: #111827;
-      font-size: 20px;
+      font-size: 18px;
       line-height: 1;
-      font-weight: 800;
+      font-weight: 900;
       background: #f6c6c3;
-      border-top: 1px solid #d9dee7;
+      border-left: 1px solid #d9dee7;
     }
 
-    .metric-tooltip-cell.good .metric-value {
+    .metric-tooltip-row.good .metric-value {
       background: #bfe3d0;
     }
 
@@ -282,8 +289,8 @@
         width: calc(100vw - 48px);
       }
 
-      .metrics-tooltip-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+      .metric-tooltip-row {
+        grid-template-columns: minmax(0, 1fr) 68px;
       }
     }
 
@@ -983,32 +990,32 @@
                   <div class="preset-pills" aria-label="Preset combinations">
                     <button class="preset-pill preset-with-info" type="button" id="presetNrs">EH today <span class="info-icon preset-info has-rich-tooltip" tabindex="0" aria-label="EH today observed performance metrics">i<span class="info-tooltip metrics-tooltip">
                       <div class="metrics-tooltip-title">EH today observed performance metrics</div>
-                      <div class="metrics-tooltip-grid" aria-label="EH today observed performance metrics">
-                        <div class="metric-tooltip-cell">
+                      <div class="metrics-tooltip-list" aria-label="EH today observed performance metrics">
+                        <div class="metric-tooltip-row">
                           <div class="metric-name">First Contentful Paint (FCP)</div>
                           <div class="metric-value">5.3</div>
                         </div>
-                        <div class="metric-tooltip-cell">
+                        <div class="metric-tooltip-row">
                           <div class="metric-name">Speed Index</div>
                           <div class="metric-value">5.3</div>
                         </div>
-                        <div class="metric-tooltip-cell">
+                        <div class="metric-tooltip-row">
                           <div class="metric-name">Largest Contentful Paint (LCP)</div>
                           <div class="metric-value">5.8</div>
                         </div>
-                        <div class="metric-tooltip-cell good">
+                        <div class="metric-tooltip-row good">
                           <div class="metric-name">Total Blocking Time (TBT)</div>
                           <div class="metric-value">110.0</div>
                         </div>
-                        <div class="metric-tooltip-cell good">
+                        <div class="metric-tooltip-row good">
                           <div class="metric-name">Cumulative Layout Shift (CLS score)</div>
                           <div class="metric-value">0.0</div>
                         </div>
-                        <div class="metric-tooltip-cell">
+                        <div class="metric-tooltip-row">
                           <div class="metric-name">Time to Interactive (TTI)</div>
                           <div class="metric-value">6.5</div>
                         </div>
-                        <div class="metric-tooltip-cell">
+                        <div class="metric-tooltip-row">
                           <div class="metric-name">Time to Interactive Observed (TTI-O)</div>
                           <div class="metric-value">17.1</div>
                         </div>
