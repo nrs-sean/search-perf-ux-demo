@@ -1424,10 +1424,40 @@
       margin: 12px 0 0;
     }
 
+    .tradeoff-connector {
+      display: grid;
+      justify-items: center;
+      gap: 6px;
+      margin: 16px 0 14px;
+      color: #667085;
+    }
+
+    .tradeoff-connector-line {
+      width: 1px;
+      height: 22px;
+      background: #D0D5DD;
+      position: relative;
+    }
+
+    .tradeoff-connector-line::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: -4px;
+      width: 7px;
+      height: 7px;
+      border-right: 1px solid #D0D5DD;
+      border-bottom: 1px solid #D0D5DD;
+      transform: translateX(-50%) rotate(45deg);
+      background: transparent;
+    }
+
+    
+
     .funnel-inline {
-      margin-top: 18px;
-      padding-top: 16px;
-      border-top: 1px solid var(--border);
+      margin-top: 0;
+      padding-top: 0;
+      border-top: 0;
     }
 
     .metric-group-header {
@@ -1846,6 +1876,9 @@
                 <div class="bar-track"><div class="bar-fill" id="loadBar"></div></div>
                 <strong id="loadLabel">40%</strong>
               </div>
+            </div>
+            <div class="tradeoff-connector" aria-hidden="true">
+              <div class="tradeoff-connector-line"></div>
             </div>
             <div class="funnel-inline">
               <div class="label-with-info metric-group-title">Willingness to wait <span class="info-icon has-rich-tooltip" tabindex="0" aria-label="Willingness to wait source">i<span class="info-tooltip">Qualitative thresholds are based on modern responsiveness guidance: Google’s INP Core Web Vital rates ≤200 ms as good and &gt;500 ms as poor, while mobile search latency research shows delays around 7–10 seconds significantly worsen perceived experience. Sources: <a href="https://web.dev/articles/defining-core-web-vitals-thresholds" target="_blank" rel="noopener noreferrer">Google INP thresholds</a>, <a href="https://arxiv.org/abs/2101.09086" target="_blank" rel="noopener noreferrer">mobile search latency study</a>, and <a href="https://www.nngroup.com/articles/response-times-3-important-limits/" target="_blank" rel="noopener noreferrer">classic NN/g response-time guidance</a>.</span></span></div>
