@@ -1657,8 +1657,8 @@
 
 
     function updatePresetPills() {
-      const enterpriseActive = debounceDelay === 200 && latency === 800;
-      const appPresetActive = debounceDelay === null && els.appPresetSelect.value !== '';
+      const enterpriseActive = (debounceDelay === 200 && latency === 800) || pageLoadTitleOverride === 'Enterprise Standard';
+      const appPresetActive = debounceDelay === null && els.appPresetSelect.value !== '' && pageLoadTitleOverride !== 'Enterprise Standard';
       els.presetEnterprise.classList.toggle('active', enterpriseActive);
       els.appPresetControl.classList.toggle('is-inactive', !appPresetActive);
     }
@@ -2140,6 +2140,8 @@
         runPageLoad('Enterprise Standard');
       } else {
         applyPreset('Enterprise Standard', 200, 800);
+        clearAppPresetSelection();
+        updatePresetPills();
       }
     });
 
