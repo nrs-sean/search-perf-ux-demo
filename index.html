@@ -1154,6 +1154,11 @@
     .funnel-fill.metric-warn { background: #f59e0b; }
     .funnel-fill.metric-bad { background: #dc2626; }
 
+    .funnel-fill.hide-inbar-value {
+      color: transparent;
+      padding-right: 0;
+    }
+
     .bar-fill.metric-good { background: #16a34a; }
     .bar-fill.metric-ok { background: #84cc16; }
     .bar-fill.metric-warn { background: #f59e0b; }
@@ -1229,13 +1234,13 @@
       <section class="panel app-panel">
         <div class="app-surface" aria-label="Search application demo">
           <h2 class="app-experience-title">Get the experience</h2>
-          <div class="hint-row">
+          <div class="hint-row" style="display:none;">
             <span id="modeHint">Mode: Simple page load — debounce doesn’t apply</span>
             <span id="lastQueryHint">Page load preset selected</span>
           </div>
 
           <div id="pageLoadExperience" class="experience-panel active">
-            <div class="label" style="margin-bottom:10px;">Application page load</div>
+            <div class="label" style="margin-bottom:10px;" id="pageLoadLabel">Application page load — preset selected</div>
             <div class="page-load-shell" aria-live="polite">
               <div class="page-load-overlay" id="pageLoadOverlay" aria-hidden="false">
                 <div class="loading-card"><span class="spinner"></span><span id="pageOverlayText">Loading application…</span></div>
@@ -1252,7 +1257,7 @@
           </div>
 
           <div id="searchExperience" class="experience-panel">
-            <div class="label" style="margin-bottom:10px;">Application search</div>
+            <div class="label" style="margin-bottom:10px;" id="searchLabel">Application search — no query yet</div>
             <div class="search-wrap">
               <input id="searchInput" class="search-input" autocomplete="off" placeholder="Try typing: email, prospectus, investor, roadshow…" />
               <span class="search-icon">⌕</span>
@@ -1451,6 +1456,8 @@
       pageLoadContent: document.getElementById('pageLoadContent'),
       pageLoadTitle: document.getElementById('pageLoadTitle'),
       pageLoadMeta: document.getElementById('pageLoadMeta'),
+      pageLoadLabel: document.getElementById('pageLoadLabel'),
+      searchLabel: document.getElementById('searchLabel'),
       eventLog: document.getElementById('eventLog'),
       resetBtn: document.getElementById('resetBtn'),
       appPresetControl: document.querySelector('.app-preset-control'),
@@ -1673,8 +1680,10 @@
       els.searchExperience.classList.toggle('active', !pageMode);
       if (pageMode) {
         els.lastQueryHint.textContent = 'Page load preset selected';
+        els.pageLoadLabel.textContent = 'Application page load — preset selected';
       } else if (!els.input.value.trim()) {
         els.lastQueryHint.textContent = 'No query yet';
+        els.searchLabel.textContent = 'Application search — no query yet';
       }
     }
 
@@ -1725,7 +1734,7 @@
           </div>
         `).join('')}
       `;
-      els.pageLoadMeta.textContent = `${appName} loaded in ${elapsed} ms`;
+      els.pageLoadMeta.textContent = `Loaded in ${elapsed} ms`;
     }
 
     function setPageLoading(isLoading, appName = selectedAppName()) {
@@ -1817,13 +1826,15 @@
       const droppedTone = dropped <= 10 ? 'metric-good' : dropped <= 30 ? 'metric-ok' : dropped <= 50 ? 'metric-warn' : 'metric-bad';
 
       els.funnelRetained.style.width = `${retained}%`;
-      els.funnelRetained.textContent = `${retained}%`;
+      els.funnelRetained.textContent = retained >= 18 ? `${retained}%` : '';
       els.funnelRetainedLabel.textContent = `${retained}%`;
+      els.funnelRetained.classList.toggle('hide-inbar-value', retained < 18);
       setMetricColor(els.funnelRetained, tone);
 
       els.funnelDropped.style.width = `${Math.max(4, dropped)}%`;
-      els.funnelDropped.textContent = `${dropped}%`;
+      els.funnelDropped.textContent = dropped >= 18 ? `${dropped}%` : '';
       els.funnelDroppedLabel.textContent = `${dropped}%`;
+      els.funnelDropped.classList.toggle('hide-inbar-value', dropped < 18);
       setMetricColor(els.funnelDropped, droppedTone);
 
       let note = 'At or under about 1 second, flow is generally preserved.';
@@ -1882,12 +1893,14 @@
         setResultsLoading(false);
         setState('Ready', 'done');
         els.lastQueryHint.textContent = 'No query yet';
+        els.searchLabel.textContent = 'Application search — no query yet';
         els.results.innerHTML = '';
         return;
       }
 
       lastKeyTime = performance.now();
       els.lastQueryHint.textContent = `Current query: “${query}”`;
+      els.searchLabel.textContent = `Application search — “${query}”`;
 
       const effectiveDebounce = debounceDelay === null ? 0 : debounceDelay;
       if (effectiveDebounce > 0) {
