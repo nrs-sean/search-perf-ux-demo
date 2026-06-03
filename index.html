@@ -160,6 +160,12 @@
       margin-left: auto;
     }
 
+    .top-actions {
+      justify-content: flex-start;
+      margin-left: 0;
+      margin-bottom: 14px;
+    }
+
     .preset-pill {
       border: 1.5px solid #fed7aa;
       background: #fffaf5;
@@ -269,8 +275,8 @@
 
     .preset-info.has-rich-tooltip .metrics-tooltip {
       left: auto;
-      right: -10px;
-      top: calc(100% + 10px);
+      right: -8px;
+      top: calc(100% + 12px);
       transform: translateY(2px);
     }
 
@@ -299,9 +305,10 @@
 
 
     .app-preset-control {
+      position: relative;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 0;
       overflow: visible;
     }
 
@@ -324,7 +331,7 @@
       background: #f97316;
       color: #fff;
       border-radius: 999px;
-      padding: 6px 30px 6px 12px;
+      padding: 6px 58px 6px 12px;
       font-size: 12px;
       line-height: 1;
       font-weight: 800;
@@ -337,8 +344,8 @@
         linear-gradient(45deg, transparent 50%, currentColor 50%),
         linear-gradient(135deg, currentColor 50%, transparent 50%);
       background-position:
-        calc(100% - 16px) 50%,
-        calc(100% - 11px) 50%;
+        calc(100% - 36px) 50%,
+        calc(100% - 31px) 50%;
       background-size: 5px 5px, 5px 5px;
       background-repeat: no-repeat;
     }
@@ -377,7 +384,19 @@
     }
 
     .app-preset-control .preset-info {
-      margin-left: 1px;
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 2;
+      margin-left: 0;
+      border-color: currentColor;
+      color: currentColor;
+      background: rgba(255,255,255,.42);
+    }
+
+    .app-preset-control.is-inactive .preset-info {
+      background: rgba(255,255,255,.68);
     }
 
     .preset-info .info-tooltip {
@@ -1048,6 +1067,7 @@
     @media (max-width: 540px) {
       .label-row { align-items: flex-start; flex-direction: column; }
       .header-actions { margin-left: 0; justify-content: flex-start; flex-wrap: wrap; }
+      .top-actions { margin-bottom: 14px; }
       .preset-pills { margin-left: 0; flex-wrap: wrap; justify-content: flex-start; }
       .segmented { overflow-x: auto; padding-bottom: 2px; }
       .segmented button { flex-basis: auto; }
@@ -1067,18 +1087,18 @@
         <section class="controls-card" aria-label="Prototype controls">
           <div class="stacked-controls">
             <div class="control-group">
+              <div class="header-actions top-actions" aria-label="Preset and reset controls">
+                <div class="preset-pills" aria-label="Preset combinations">
+                  <div class="app-preset-control">
+                    <select id="appPresetSelect" class="app-select" aria-label="Select app performance preset"></select>
+                    <span class="info-icon preset-info has-rich-tooltip app-metrics-info" tabindex="0" aria-label="Performance metrics for the selected app">i<span class="info-tooltip metrics-tooltip" id="appMetricsTooltip"></span></span>
+                  </div>
+                  <button class="preset-pill" type="button" id="presetEnterprise">Enterprise Standard</button>
+                </div>
+                <button class="reset-pill" id="resetBtn" type="button">Reset</button>
+              </div>
               <div class="label-row">
                 <div class="label">Debounce delay</div>
-                <div class="header-actions" aria-label="Preset and reset controls">
-                  <div class="preset-pills" aria-label="Preset combinations">
-                    <div class="app-preset-control">
-                      <select id="appPresetSelect" class="app-select" aria-label="Select app performance preset"></select>
-                      <span class="info-icon preset-info has-rich-tooltip app-metrics-info" tabindex="0" aria-label="Performance metrics for the selected app">i<span class="info-tooltip metrics-tooltip" id="appMetricsTooltip"></span></span>
-                    </div>
-                    <button class="preset-pill" type="button" id="presetEnterprise">Enterprise Standard</button>
-                  </div>
-                  <button class="reset-pill" id="resetBtn" type="button">Reset demo</button>
-                </div>
               </div>
               <div class="segmented" id="debounceButtons"></div>
             </div>
