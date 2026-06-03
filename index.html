@@ -163,6 +163,27 @@
       margin: 0;
     }
 
+    .perf-data-control {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      flex: 0 0 auto;
+      z-index: 2147483645;
+    }
+
+    .perf-data-control.dialog-open {
+      z-index: 2147483646;
+    }
+
+    .perf-data-label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+
     .gear-button {
       width: 34px;
       height: 34px;
@@ -190,15 +211,56 @@
 
     .preset-editor {
       display: none;
-      margin-top: 14px;
+      position: absolute;
+      top: calc(100% + 10px);
+      right: 0;
+      z-index: 2147483646;
+      width: min(360px, calc(100vw - 48px));
+      margin-top: 0;
       padding: 14px;
       border: 1px solid #D0D5DD;
       border-radius: 14px;
-      background: #FCFCFD;
+      background: #ffffff;
+      box-shadow: 0 18px 44px rgba(16, 24, 40, .16);
     }
 
     .preset-editor.active {
       display: block;
+    }
+
+    .perf-data-dialog-title {
+      margin: 0 0 8px;
+      color: #101828;
+      font-size: 14px;
+      line-height: 1.2;
+      font-weight: 900;
+    }
+
+    .perf-data-dialog-copy {
+      margin: 0 0 12px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .perf-data-dialog-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid #D0D5DD;
+      border-radius: 999px;
+      background: #F9FAFB;
+      color: #344054;
+      padding: 8px 11px;
+      font-size: 12px;
+      line-height: 1;
+      font-weight: 900;
+      text-decoration: none;
+    }
+
+    .perf-data-dialog-link:hover {
+      background: #F2F4F7;
+      border-color: #98A2B3;
     }
 
     .preset-editor-grid {
@@ -1745,30 +1807,18 @@
           <div class="situation-copy">
             <div class="situation-header">
               <h2>Situation</h2>
-              <button class="gear-button" id="presetEditorToggle" type="button" aria-expanded="false" aria-controls="presetEditor" aria-label="Edit preset settings">⚙</button>
+              <div class="perf-data-control">
+                <span class="perf-data-label">Perf data</span>
+                <button class="gear-button" id="presetEditorToggle" type="button" aria-expanded="false" aria-controls="presetEditor" aria-label="View performance data source">⚙</button>
+                <div class="preset-editor" id="presetEditor" aria-label="Performance data source dialog">
+                  <h3 class="perf-data-dialog-title">Performance data source</h3>
+                  <p class="perf-data-dialog-copy">Performance data gathered in Q1 2025 using Google DevTools, may not represent today’s performance.</p>
+                  <a class="perf-data-dialog-link" href="https://netroadshowdata-my.sharepoint.com/:x:/g/personal/smalone_netroadshow_com/IQCZfqEw0dpiSqEh57K6fYe5Adxm-oZ1niqxSaEvrZurhHY?e=syUQWU&nav=MTVfezAwMDAwMDAwLTAwMDEtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMH0" target="_blank" rel="noopener noreferrer">Open Excel source ↗</a>
+                </div>
+              </div>
             </div>
             <p>Adjust both debounce delay and server latency to see the tradeoff: debounce controls when the request starts; latency controls how long the server takes once the request is sent.</p>
-            <div class="preset-editor" id="presetEditor" aria-label="Edit preset settings">
-              <div class="preset-editor-grid">
-                <div class="editor-field">
-                  <label for="editorPresetSelect">Preset</label>
-                  <select id="editorPresetSelect"></select>
-                </div>
-                <div class="editor-field">
-                  <label for="editorDebounce">Debounce ms</label>
-                  <input id="editorDebounce" type="number" min="0" max="1000" step="50" />
-                </div>
-                <div class="editor-field">
-                  <label for="editorLatency">Time to load ms</label>
-                  <input id="editorLatency" type="number" min="50" max="10000" step="50" />
-                </div>
-              </div>
-              <p class="editor-note">App presets are page-load examples, so debounce is disabled for those. Enterprise Standard supports both Search Query and Page Load.</p>
-              <div class="editor-actions">
-                <button class="editor-cancel" id="editorClose" type="button">Close</button>
-                <button class="editor-save" id="editorSave" type="button">Save preset</button>
-              </div>
-            </div>
+            
           </div>
           <div class="stacked-controls">
             <div class="control-group">
@@ -2735,114 +2785,27 @@
 
 
 
-    function populatePresetEditorOptions() {
-      els.editorPresetSelect.innerHTML = '';
-
-      const enterpriseOption = document.createElement('option');
-      enterpriseOption.value = 'enterprise';
-      enterpriseOption.textContent = 'Enterprise Standard';
-      els.editorPresetSelect.appendChild(enterpriseOption);
-
-      appPerformanceData.forEach(app => {
-        if (!appHasPerformanceData(app)) return;
-        const option = document.createElement('option');
-        option.value = `app:${app.name}`;
-        option.textContent = app.displayName || app.name;
-        els.editorPresetSelect.appendChild(option);
-      });
-    }
-
-    function refreshPresetEditorFields() {
-      const value = els.editorPresetSelect.value;
-
-      if (value === 'enterprise') {
-        els.editorDebounce.disabled = false;
-        els.editorDebounce.value = enterpriseDebounce;
-        els.editorLatency.value = enterpriseLatency;
-        return;
-      }
-
-      const appName = value.replace(/^app:/, '');
-      const app = appPerformanceData.find(item => item.name === appName);
-      els.editorDebounce.disabled = true;
-      els.editorDebounce.value = '';
-      els.editorLatency.value = app && appHasPerformanceData(app) ? latencyFromApp(app) : '';
-    }
-
     function togglePresetEditor(forceOpen = null) {
       const willOpen = forceOpen === null ? !els.presetEditor.classList.contains('active') : forceOpen;
+      const control = els.presetEditor.closest('.perf-data-control');
       els.presetEditor.classList.toggle('active', willOpen);
       els.presetEditorToggle.classList.toggle('active', willOpen);
       els.presetEditorToggle.setAttribute('aria-expanded', String(willOpen));
-      if (willOpen) {
-        populatePresetEditorOptions();
-        if (pageLoadTitleOverride === 'Enterprise Standard' || els.presetEnterprise.classList.contains('active')) {
-          els.editorPresetSelect.value = 'enterprise';
-        } else if (els.appPresetSelect.value) {
-          els.editorPresetSelect.value = `app:${els.appPresetSelect.value}`;
-        } else {
-          els.editorPresetSelect.value = 'enterprise';
-        }
-        refreshPresetEditorFields();
-      }
+      if (control) control.classList.toggle('dialog-open', willOpen);
     }
 
-    function savePresetEditorValues() {
-      const value = els.editorPresetSelect.value;
-      const nextLatency = Math.max(50, Math.min(10000, Math.round(Number(els.editorLatency.value || 50) / 50) * 50));
-
-      if (value === 'enterprise') {
-        const nextDebounce = Math.max(0, Math.min(1000, Math.round(Number(els.editorDebounce.value || 0) / 50) * 50));
-        enterpriseDebounce = nextDebounce;
-        enterpriseLatency = nextLatency;
-
-        if (els.presetEnterprise.classList.contains('active')) {
-          latency = enterpriseLatency;
-          els.latencyRange.value = String(latency);
-          els.latencyLabel.textContent = `${latency} ms`;
-          if (pageLoadTitleOverride === 'Enterprise Standard') {
-            debounceDelay = null;
-            runPageLoad('Enterprise Standard');
-          } else {
-            debounceDelay = enterpriseDebounce;
-            initButtons();
-            scheduleSearch();
-          }
-          updateTradeoffViz();
-          updatePresetPills();
-        }
-
-        addLog(`Updated <strong>Enterprise Standard</strong>: ${enterpriseDebounce} ms debounce + ${enterpriseLatency} ms time to load.`);
-      } else {
-        const appName = value.replace(/^app:/, '');
-        const app = appPerformanceData.find(item => item.name === appName);
-        if (app) {
-          app.tti = nextLatency / 1000;
-          app.ttiO = nextLatency / 1000;
-          app.observedAvg = nextLatency / 1000;
-
-          if (els.appPresetSelect.value === app.name) {
-            latency = nextLatency;
-            els.latencyRange.value = String(latency);
-            els.latencyLabel.textContent = `${latency} ms`;
-            updateAppMetricsTooltip(app);
-            runPageLoad(app.displayName || app.name);
-          }
-
-          addLog(`Updated <strong>${app.displayName || app.name}</strong>: ${nextLatency} ms time to load.`);
-        }
+    document.addEventListener('click', event => {
+      if (!els.presetEditor || !els.presetEditorToggle) return;
+      const control = els.presetEditor.closest('.perf-data-control');
+      if (control && !control.contains(event.target)) {
+        togglePresetEditor(false);
       }
+    });
 
-      updateTradeoffViz();
-      updatePresetPills();
-      refreshPresetEditorFields();
-    }
-
-    els.presetEditorToggle.addEventListener('click', () => togglePresetEditor());
-    els.editorClose.addEventListener('click', () => togglePresetEditor(false));
-    els.editorPresetSelect.addEventListener('change', refreshPresetEditorFields);
-    els.editorSave.addEventListener('click', savePresetEditorValues);
-
+    els.presetEditorToggle.addEventListener('click', event => {
+      event.stopPropagation();
+      togglePresetEditor();
+    });
 
     els.searchTab.addEventListener('click', () => {
       const wasPageLoadMode = els.pageLoadExperience.classList.contains('active');
