@@ -139,9 +139,9 @@
     }
 
     .preset-pill {
-      border: 1.5px solid #8ec7ef;
-      background: #f0f9ff;
-      color: #0369a1;
+      border: 1.5px solid #fdba74;
+      background: #fff7ed;
+      color: #c2410c;
       border-radius: 999px;
       padding: 6px 12px;
       font-size: 12px;
@@ -153,16 +153,16 @@
     }
 
     .preset-pill:hover {
-      border-color: #38a3e8;
-      background: #e0f2fe;
+      border-color: #fb923c;
+      background: #ffedd5;
       transform: translateY(-1px);
     }
 
     .preset-pill.active {
-      border-color: #0284c7;
-      background: #e0f2fe;
-      color: #075985;
-      box-shadow: inset 0 0 0 1px rgba(2, 132, 199, .08);
+      border-color: #f97316;
+      background: #ffedd5;
+      color: #9a3412;
+      box-shadow: inset 0 0 0 1px rgba(249, 115, 22, .10);
     }
 
     .reset-pill {
@@ -537,6 +537,65 @@
       line-height: 1.5;
     }
 
+
+    .tile-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .tile-header h2 {
+      margin: 0;
+    }
+
+    .collapse-toggle {
+      width: 30px;
+      height: 30px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--muted);
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 16px;
+      line-height: 1;
+      transition: .15s ease;
+      flex: 0 0 auto;
+    }
+
+    .collapse-toggle:hover {
+      border-color: #bfc8d4;
+      color: var(--ink);
+      transform: translateY(-1px);
+    }
+
+    .collapse-toggle .chevron {
+      display: inline-block;
+      transform: rotate(180deg);
+      transition: transform .18s ease;
+    }
+
+    .collapsible.is-collapsed .collapse-toggle .chevron {
+      transform: rotate(0deg);
+    }
+
+    .collapsible.is-collapsed .tile-body {
+      display: none;
+    }
+
+    .collapsible.is-collapsed {
+      padding-bottom: 18px;
+    }
+
+    .bar-fill.metric-good { background: #16a34a; }
+    .bar-fill.metric-ok { background: #84cc16; }
+    .bar-fill.metric-warn { background: #f59e0b; }
+    .bar-fill.metric-bad { background: #dc2626; }
+
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(5px); }
       to { opacity: 1; transform: translateY(0); }
@@ -616,84 +675,102 @@
       </section>
       </div>
       <aside class="right-rail">
-        <section class="takeaway header-takeaway">
-        <div>
-          <h2>UX takeaway</h2>
-          <p><strong>For server-backed typeahead, 150–250 ms is usually a good starting point.</strong> Past ~300 ms of debounce, users begin to feel the delay; with high server latency, even a “good” debounce may feel slow.</p>
-        </div>
+        <section class="takeaway header-takeaway collapsible is-collapsed">
+          <div class="tile-header">
+            <h2>UX takeaway</h2>
+            <button class="collapse-toggle" type="button" aria-label="Expand UX takeaway" aria-expanded="false"><span class="chevron">⌃</span></button>
+          </div>
+          <div class="tile-body">
+            <p><strong>For server-backed typeahead, 150–250 ms is usually a good starting point.</strong> Past ~300 ms of debounce, users begin to feel the delay; with high server latency, even a “good” debounce may feel slow.</p>
+          </div>
         </section>
         <div class="right-stack">
-        <section class="panel">
-          <h2>What this demonstrates</h2>
-          <p class="explainer">Debounce delay and server latency compound. Debounce is the intentional wait before posting; server latency is the unavoidable wait after posting. The user feels the sum of both.</p>
-          <div class="bars">
-            <div class="bar-row">
-              <span>Perceived wait</span>
-              <div class="bar-track"><div class="bar-fill" id="waitBar"></div></div>
-              <strong id="waitLabel">450</strong>
-            </div>
-            <div class="bar-row">
-              <span>Request load</span>
-              <div class="bar-track"><div class="bar-fill" id="loadBar"></div></div>
-              <strong id="loadLabel">40%</strong>
-            </div>
-            <div class="bar-row">
-              <span>UX feel</span>
-              <div class="bar-track"><div class="bar-fill" id="uxBar"></div></div>
-              <strong id="uxLabel">Good</strong>
+        <section class="panel collapsible">
+          <div class="tile-header">
+            <h2>What this demonstrates</h2>
+            <button class="collapse-toggle" type="button" aria-label="Collapse What this demonstrates" aria-expanded="true"><span class="chevron">⌃</span></button>
+          </div>
+          <div class="tile-body">
+            <p class="explainer">Debounce delay and server latency compound. Debounce is the intentional wait before posting; server latency is the unavoidable wait after posting. The user feels the sum of both.</p>
+            <div class="bars">
+              <div class="bar-row">
+                <span>Perceived wait</span>
+                <div class="bar-track"><div class="bar-fill" id="waitBar"></div></div>
+                <strong id="waitLabel">450</strong>
+              </div>
+              <div class="bar-row">
+                <span>Request load</span>
+                <div class="bar-track"><div class="bar-fill" id="loadBar"></div></div>
+                <strong id="loadLabel">40%</strong>
+              </div>
+              <div class="bar-row">
+                <span>UX feel</span>
+                <div class="bar-track"><div class="bar-fill" id="uxBar"></div></div>
+                <strong id="uxLabel">Good</strong>
+              </div>
             </div>
           </div>
         </section>
 
 
-    <section class="panel instrumentation-panel" aria-label="Debounce instrumentation">
-      <h2>Debounce instrumentation</h2>
-      <p class="explainer">Measurement lives outside the app. The key UX equation is debounce delay + server latency = perceived wait after the user stops typing.</p>
-
-      <div class="metrics instrumentation" aria-label="Demo instrumentation">
-        <div class="metric">
-          <div class="label">Keystrokes</div>
-          <div class="value" id="keystrokes">0</div>
-          <div class="caption">Every character typed.</div>
-        </div>
-        <div class="metric">
-          <div class="label">Requests</div>
-          <div class="value" id="requests">0</div>
-          <div class="caption">Calls posted to the server.</div>
-        </div>
-        <div class="metric">
-          <div class="label">Suppressed</div>
-          <div class="value" id="suppressed">0</div>
-          <div class="caption">Requests avoided by debouncing.</div>
-        </div>
-        <div class="metric">
-          <div class="label">Last update</div>
-          <div class="value" id="lastUpdate">—</div>
-          <div class="caption">Time from last keypress to results.</div>
-        </div>
-        <div class="metric">
-          <div class="label">Server latency</div>
-          <div class="value" id="latencyMetric">6000 ms</div>
-          <div class="caption">Time after request is posted.</div>
-        </div>
-        <div class="metric">
-          <div class="label">Expected wait</div>
-          <div class="value" id="expectedWait">6500 ms</div>
-          <div class="caption">Debounce + server latency.</div>
-        </div>
+    <section class="panel instrumentation-panel collapsible is-collapsed" aria-label="Debounce instrumentation">
+      <div class="tile-header">
+        <h2>Debounce instrumentation</h2>
+        <button class="collapse-toggle" type="button" aria-label="Expand Debounce instrumentation" aria-expanded="false"><span class="chevron">⌃</span></button>
       </div>
+      <div class="tile-body">
+        <p class="explainer">Measurement lives outside the app. The key UX equation is debounce delay + server latency = perceived wait after the user stops typing.</p>
 
-      <div class="status-strip instrumentation-status">
-        <div class="state-pill done" id="statePill">Ready</div>
-        <div>
-          <div class="timeline-track"><div class="timeline-fill" id="timelineFill"></div></div>
+        <div class="metrics instrumentation" aria-label="Demo instrumentation">
+          <div class="metric">
+            <div class="label">Keystrokes</div>
+            <div class="value" id="keystrokes">0</div>
+            <div class="caption">Every character typed.</div>
+          </div>
+          <div class="metric">
+            <div class="label">Requests</div>
+            <div class="value" id="requests">0</div>
+            <div class="caption">Calls posted to the server.</div>
+          </div>
+          <div class="metric">
+            <div class="label">Suppressed</div>
+            <div class="value" id="suppressed">0</div>
+            <div class="caption">Requests avoided by debouncing.</div>
+          </div>
+          <div class="metric">
+            <div class="label">Last update</div>
+            <div class="value" id="lastUpdate">—</div>
+            <div class="caption">Time from last keypress to results.</div>
+          </div>
+          <div class="metric">
+            <div class="label">Server latency</div>
+            <div class="value" id="latencyMetric">6000 ms</div>
+            <div class="caption">Time after request is posted.</div>
+          </div>
+          <div class="metric">
+            <div class="label">Expected wait</div>
+            <div class="value" id="expectedWait">6500 ms</div>
+            <div class="caption">Debounce + server latency.</div>
+          </div>
+        </div>
+
+        <div class="status-strip instrumentation-status">
+          <div class="state-pill done" id="statePill">Ready</div>
+          <div>
+            <div class="timeline-track"><div class="timeline-fill" id="timelineFill"></div></div>
+          </div>
         </div>
       </div>
     </section>
 
-        <section class="panel">
-          <h2>Event log</h2>
-          <div class="event-log" id="eventLog"></div>
+        <section class="panel collapsible is-collapsed">
+          <div class="tile-header">
+            <h2>Event log</h2>
+            <button class="collapse-toggle" type="button" aria-label="Expand Event log" aria-expanded="false"><span class="chevron">⌃</span></button>
+          </div>
+          <div class="tile-body">
+            <div class="event-log" id="eventLog"></div>
+          </div>
         </section>
         </div>
       </aside>
@@ -755,6 +832,19 @@
       loadLabel: document.getElementById('loadLabel'),
       uxLabel: document.getElementById('uxLabel')
     };
+
+    function initCollapsibles() {
+      document.querySelectorAll('.collapsible').forEach(tile => {
+        const button = tile.querySelector('.collapse-toggle');
+        if (!button) return;
+        button.addEventListener('click', () => {
+          const isCollapsed = tile.classList.toggle('is-collapsed');
+          button.setAttribute('aria-expanded', String(!isCollapsed));
+          const title = tile.querySelector('h2')?.textContent || 'tile';
+          button.setAttribute('aria-label', `${isCollapsed ? 'Expand' : 'Collapse'} ${title}`);
+        });
+      });
+    }
 
     function initButtons() {
       els.buttons.innerHTML = '';
@@ -836,6 +926,11 @@
       els.suppressed.textContent = suppressed;
     }
 
+    function setMetricColor(el, tone) {
+      el.classList.remove('metric-good', 'metric-ok', 'metric-warn', 'metric-bad');
+      el.classList.add(tone);
+    }
+
     function updateTradeoffViz() {
       const totalWait = debounceDelay + latency;
       const loadMap = {0: 100, 50: 75, 200: 40, 300: 28, 500: 15, 700: 10, 1000: 6};
@@ -846,13 +941,21 @@
       if (totalWait > 500) { ux = 72; uxLabel = 'Noticeable'; }
       if (totalWait > 750) { ux = 52; uxLabel = 'Slow'; }
       if (totalWait > 1000) { ux = 34; uxLabel = 'Very slow'; }
+      if (totalWait > 3000) { ux = 18; uxLabel = 'Poor'; }
+
+      const waitTone = totalWait <= 500 ? 'metric-good' : totalWait <= 1000 ? 'metric-ok' : totalWait <= 3000 ? 'metric-warn' : 'metric-bad';
+      const loadTone = load <= 20 ? 'metric-good' : load <= 50 ? 'metric-ok' : load <= 75 ? 'metric-warn' : 'metric-bad';
+      const uxTone = ux >= 80 ? 'metric-good' : ux >= 60 ? 'metric-ok' : ux >= 35 ? 'metric-warn' : 'metric-bad';
 
       els.waitLabel.textContent = `${totalWait} ms`;
       els.loadLabel.textContent = `${load}%`;
       els.uxLabel.textContent = uxLabel;
-      els.waitBar.style.width = `${Math.min(100, totalWait / 14)}%`;
+      els.waitBar.style.width = `${Math.min(100, totalWait / 100)}%`;
       els.loadBar.style.width = `${load}%`;
       els.uxBar.style.width = `${ux}%`;
+      setMetricColor(els.waitBar, waitTone);
+      setMetricColor(els.loadBar, loadTone);
+      setMetricColor(els.uxBar, uxTone);
       els.latencyMetric.textContent = `${latency} ms`;
       els.expectedWait.textContent = `${totalWait} ms`;
     }
@@ -970,6 +1073,7 @@
       els.input.focus();
     });
 
+    initCollapsibles();
     initButtons();
     updateTradeoffViz();
     updatePresetPills();
