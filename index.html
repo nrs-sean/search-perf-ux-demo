@@ -190,8 +190,8 @@
 
 
     .metrics-tooltip {
-      width: 620px;
-      max-width: min(620px, calc(100vw - 48px));
+      width: 700px;
+      max-width: min(700px, calc(100vw - 48px));
       padding: 14px;
       overflow: visible;
       border-radius: 14px;
@@ -217,7 +217,7 @@
 
     .metric-tooltip-row {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) 92px;
+      grid-template-columns: minmax(0, 1fr) 72px;
       align-items: center;
       border: 1px solid #d9dee7;
       border-radius: 10px;
@@ -234,6 +234,8 @@
       text-align: left;
       background: #fff;
       min-width: 0;
+      white-space: normal;
+      overflow: visible;
     }
 
     .metric-tooltip-row .metric-value {
@@ -241,7 +243,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 9px 8px;
+      padding: 9px 4px;
       color: #111827;
       font-size: 18px;
       line-height: 1;
@@ -290,7 +292,7 @@
       }
 
       .metric-tooltip-row {
-        grid-template-columns: minmax(0, 1fr) 76px;
+        grid-template-columns: minmax(0, 1fr) 64px;
       }
     }
 
