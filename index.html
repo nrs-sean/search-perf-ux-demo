@@ -1098,12 +1098,12 @@
             </div>
             <div class="funnel-inline">
               <div class="label-with-info metric-group-title">Willingness to wait <span class="info-icon has-rich-tooltip" tabindex="0" aria-label="Willingness to wait source">i<span class="info-tooltip">Qualitative thresholds are based on modern responsiveness guidance: Google’s INP Core Web Vital rates ≤200 ms as good and &gt;500 ms as poor, while mobile search latency research shows delays around 7–10 seconds significantly worsen perceived experience. Sources: <a href="https://web.dev/articles/defining-core-web-vitals-thresholds" target="_blank" rel="noopener noreferrer">Google INP thresholds</a>, <a href="https://arxiv.org/abs/2101.09086" target="_blank" rel="noopener noreferrer">mobile search latency study</a>, and <a href="https://www.nngroup.com/articles/response-times-3-important-limits/" target="_blank" rel="noopener noreferrer">classic NN/g response-time guidance</a>.</span></span></div>
-              <p class="explainer metric-group-explainer">Starting with 100 users, this estimates how many may still be willing to wait as total time to first results increases.</p>
+              <p class="explainer metric-group-explainer">Starting from 100%, this estimates the share of users who may still be willing to wait as total time to first results increases.</p>
               <div class="funnel">
                 <div class="funnel-row">
                   <span>Start</span>
-                  <div class="funnel-track"><div class="funnel-fill metric-good" id="funnelStart" style="width:100%;">100</div></div>
-                  <strong>100</strong>
+                  <div class="funnel-track"><div class="funnel-fill metric-good" id="funnelStart" style="width:100%;">100%</div></div>
+                  <strong>100%</strong>
                 </div>
                 <div class="funnel-row">
                   <span>Drop-off</span>
@@ -1363,13 +1363,13 @@
       const droppedTone = dropped <= 10 ? 'metric-good' : dropped <= 30 ? 'metric-ok' : dropped <= 50 ? 'metric-warn' : 'metric-bad';
 
       els.funnelRetained.style.width = `${retained}%`;
-      els.funnelRetained.textContent = retained;
-      els.funnelRetainedLabel.textContent = `${retained}`;
+      els.funnelRetained.textContent = `${retained}%`;
+      els.funnelRetainedLabel.textContent = `${retained}%`;
       setMetricColor(els.funnelRetained, tone);
 
       els.funnelDropped.style.width = `${Math.max(4, dropped)}%`;
-      els.funnelDropped.textContent = dropped;
-      els.funnelDroppedLabel.textContent = `${dropped}`;
+      els.funnelDropped.textContent = `${dropped}%`;
+      els.funnelDroppedLabel.textContent = `${dropped}%`;
       setMetricColor(els.funnelDropped, droppedTone);
 
       let note = 'At or under about 1 second, flow is generally preserved.';
