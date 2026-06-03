@@ -623,6 +623,9 @@
     }
 
     .page-reload-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
       border: 1px solid var(--border);
       background: #fff;
       color: var(--muted);
@@ -634,6 +637,13 @@
       cursor: pointer;
       white-space: nowrap;
       transition: .15s ease;
+    }
+
+    .reload-icon {
+      display: inline-block;
+      font-size: 14px;
+      line-height: 1;
+      transform: translateY(-.5px);
     }
 
     .page-reload-button:hover {
@@ -1441,7 +1451,7 @@
                   <div class="page-load-title" id="pageLoadTitle">EH List View</div>
                   <div class="page-load-meta" id="pageLoadMeta">Simulated page-load experience</div>
                 </div>
-                <button class="page-reload-button" id="pageReloadBtn" type="button">Reload</button>
+                <button class="page-reload-button" id="pageReloadBtn" type="button" aria-label="Reload page load experience"><span class="reload-icon" aria-hidden="true">↻</span><span>Reload</span></button>
               </div>
               <div class="page-load-content" id="pageLoadContent"></div>
             </div>
