@@ -253,6 +253,11 @@
       font-size: 11px;
       margin-top: 2px;
     }
+
+    .latency-value {
+      color: var(--accent);
+      font-weight: 900;
+    }
     .primary-button { background: var(--ink); color: #fff; border-color: var(--ink); }
 
 
@@ -858,7 +863,7 @@
               <div class="segmented" id="debounceButtons"></div>
             </div>
             <div class="control-group latency-control">
-              <div class="label">Server latency after request: <span id="latencyLabel">6000 ms</span></div>
+              <div class="label">Server latency after request: <span id="latencyLabel" class="latency-value">6000 ms</span></div>
               <input id="latencyRange" type="range" min="50" max="10000" value="6000" step="50" style="width:100%; margin-top:8px;" />
               <div class="range-caption"><span>50 ms</span><span>5,000 ms</span><span>10,000 ms</span></div>
             </div>
