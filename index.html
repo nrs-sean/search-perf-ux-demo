@@ -1356,6 +1356,165 @@
     .bar-fill.metric-warn { background: #f59e0b; }
     .bar-fill.metric-bad { background: #dc2626; }
 
+
+    .controls-card,
+    .app-panel,
+    .panel,
+    .mission-quote,
+    .right-rail,
+    .right-stack,
+    .app-surface {
+      overflow: visible;
+    }
+
+    .info-icon.has-rich-tooltip {
+      z-index: 999998;
+    }
+
+    .info-icon.has-rich-tooltip .info-tooltip,
+    .info-icon.has-rich-tooltip .info-tooltip.is-positioned {
+      position: fixed !important;
+      left: var(--tooltip-left, 16px) !important;
+      top: var(--tooltip-top, 16px) !important;
+      right: auto !important;
+      bottom: auto !important;
+      transform: none !important;
+      z-index: 999999 !important;
+      max-width: calc(100vw - 32px);
+      max-height: calc(100vh - 32px);
+      overflow: auto;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .info-icon.has-rich-tooltip.tooltip-visible .info-tooltip {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .info-icon.has-rich-tooltip .info-tooltip::after,
+    .info-icon.has-rich-tooltip .info-tooltip.is-positioned::after {
+      display: none !important;
+    }
+
+
+    /* Global rich tooltip layer: keeps tooltips above cards and inside the viewport. */
+    .info-icon.has-rich-tooltip > .info-tooltip {
+      display: none !important;
+    }
+
+    .global-rich-tooltip {
+      position: fixed;
+      left: 16px;
+      top: 16px;
+      z-index: 2147483647;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transform: translateY(4px);
+      transition: opacity .12s ease, transform .12s ease, visibility .12s ease;
+      max-width: min(420px, calc(100vw - 32px));
+      max-height: calc(100vh - 32px);
+      overflow: auto;
+      border-radius: 12px;
+      background: #172033;
+      color: #fff;
+      padding: 10px 12px;
+      box-shadow: 0 18px 44px rgba(23, 32, 51, .28);
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.4;
+      text-transform: none;
+      letter-spacing: 0;
+    }
+
+    .global-rich-tooltip.is-visible {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+
+    .global-rich-tooltip a {
+      color: #93c5fd;
+      text-decoration: underline;
+    }
+
+    .global-rich-tooltip.metrics-tooltip-global {
+      width: min(700px, calc(100vw - 32px));
+      max-width: min(700px, calc(100vw - 32px));
+      padding: 14px;
+      border-radius: 14px;
+      background: #fff;
+      color: var(--ink);
+      border: 1px solid #d9dee7;
+      box-shadow: 0 18px 44px rgba(23, 32, 51, .28);
+    }
+
+    .global-rich-tooltip.metrics-tooltip-global .metrics-tooltip-title {
+      font-size: 13px;
+      font-weight: 900;
+      color: #0f172a;
+      margin-bottom: 10px;
+      letter-spacing: -.01em;
+    }
+
+    .global-rich-tooltip.metrics-tooltip-global .metrics-tooltip-list {
+      display: grid;
+      gap: 6px;
+    }
+
+    .global-rich-tooltip.metrics-tooltip-global .metric-tooltip-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 72px;
+      align-items: center;
+      border: 1px solid #d9dee7;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .global-rich-tooltip.metrics-tooltip-global .metric-tooltip-row .metric-name {
+      padding: 9px 10px;
+      color: #0f172a;
+      font-size: 11.5px;
+      line-height: 1.25;
+      font-weight: 900;
+      text-align: left;
+      background: #fff;
+      min-width: 0;
+      white-space: normal;
+      overflow: visible;
+    }
+
+    .global-rich-tooltip.metrics-tooltip-global .metric-tooltip-row .metric-value {
+      align-self: stretch;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 9px 4px;
+      color: #111827;
+      font-size: 18px;
+      line-height: 1;
+      font-weight: 900;
+      background: #f6c6c3;
+      border-left: 1px solid #d9dee7;
+    }
+
+    .global-rich-tooltip.metrics-tooltip-global .metric-tooltip-row.good .metric-value {
+      background: #bfe3d0;
+    }
+
+    .global-rich-tooltip.metrics-tooltip-global .metrics-tooltip-note {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid #e5e7eb;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.35;
+      font-weight: 700;
+    }
+
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(5px); }
       to { opacity: 1; transform: translateY(0); }
@@ -1606,6 +1765,8 @@
     </section>
     <div class="page-footer-byline">by Sean Malone</div>
 
+    <div id="globalRichTooltip" class="global-rich-tooltip" role="tooltip" aria-hidden="true"></div>
+
   <script>
     const debounceOptions = [0, 50, 200, 300, 500, 700, 1000];
     let debounceDelay = null;
@@ -1683,6 +1844,110 @@
       funnelDroppedLabel: document.getElementById('funnelDroppedLabel'),
       funnelNote: document.getElementById('funnelNote')
     };
+
+
+    let activeTooltipTrigger = null;
+    let tooltipHideTimer = null;
+
+    function getGlobalTooltip() {
+      return document.getElementById('globalRichTooltip');
+    }
+
+    function clamp(value, min, max) {
+      return Math.min(Math.max(value, min), max);
+    }
+
+    function positionGlobalTooltip(trigger) {
+      const globalTooltip = getGlobalTooltip();
+      if (!globalTooltip || !trigger) return;
+
+      const margin = 16;
+      const triggerRect = trigger.getBoundingClientRect();
+
+      // Measure after content/class has been applied.
+      const tooltipRect = globalTooltip.getBoundingClientRect();
+      const tooltipWidth = tooltipRect.width || 360;
+      const tooltipHeight = tooltipRect.height || 160;
+
+      let left = triggerRect.left;
+      let top = triggerRect.bottom + 10;
+
+      // If there is not enough room below, open above.
+      if (top + tooltipHeight > window.innerHeight - margin) {
+        top = triggerRect.top - tooltipHeight - 10;
+      }
+
+      left = clamp(left, margin, window.innerWidth - tooltipWidth - margin);
+      top = clamp(top, margin, window.innerHeight - tooltipHeight - margin);
+
+      globalTooltip.style.left = `${Math.round(left)}px`;
+      globalTooltip.style.top = `${Math.round(top)}px`;
+    }
+
+    function showRichTooltip(trigger) {
+      const sourceTooltip = trigger.querySelector('.info-tooltip');
+      const globalTooltip = getGlobalTooltip();
+      if (!sourceTooltip || !globalTooltip) return;
+
+      window.clearTimeout(tooltipHideTimer);
+      activeTooltipTrigger = trigger;
+
+      globalTooltip.innerHTML = sourceTooltip.innerHTML;
+      globalTooltip.className = 'global-rich-tooltip';
+      if (sourceTooltip.classList.contains('metrics-tooltip')) {
+        globalTooltip.classList.add('metrics-tooltip-global');
+      }
+      globalTooltip.setAttribute('aria-hidden', 'false');
+      globalTooltip.classList.add('is-visible');
+
+      // Position twice: once immediately, once after layout settles.
+      positionGlobalTooltip(trigger);
+      requestAnimationFrame(() => positionGlobalTooltip(trigger));
+    }
+
+    function hideRichTooltipSoon() {
+      const globalTooltip = getGlobalTooltip();
+      window.clearTimeout(tooltipHideTimer);
+      tooltipHideTimer = window.setTimeout(() => {
+        if (
+          activeTooltipTrigger?.matches(':hover') ||
+          activeTooltipTrigger?.contains(document.activeElement) ||
+          globalTooltip?.matches(':hover')
+        ) {
+          return;
+        }
+
+        if (globalTooltip) {
+          globalTooltip.classList.remove('is-visible');
+          globalTooltip.setAttribute('aria-hidden', 'true');
+        }
+        activeTooltipTrigger = null;
+      }, 140);
+    }
+
+    function initTooltipPositioning() {
+      const globalTooltip = getGlobalTooltip();
+
+      document.querySelectorAll('.info-icon.has-rich-tooltip').forEach(trigger => {
+        trigger.addEventListener('mouseenter', () => showRichTooltip(trigger));
+        trigger.addEventListener('focusin', () => showRichTooltip(trigger));
+        trigger.addEventListener('mouseleave', hideRichTooltipSoon);
+        trigger.addEventListener('focusout', hideRichTooltipSoon);
+      });
+
+      if (globalTooltip) {
+        globalTooltip.addEventListener('mouseenter', () => window.clearTimeout(tooltipHideTimer));
+        globalTooltip.addEventListener('mouseleave', hideRichTooltipSoon);
+      }
+
+      window.addEventListener('resize', () => {
+        if (activeTooltipTrigger) positionGlobalTooltip(activeTooltipTrigger);
+      });
+
+      window.addEventListener('scroll', () => {
+        if (activeTooltipTrigger) positionGlobalTooltip(activeTooltipTrigger);
+      }, true);
+    }
 
     function initCollapsibles() {
       document.querySelectorAll('.collapsible').forEach(tile => {
@@ -2282,6 +2547,7 @@
       runPageLoad(selectedAppName());
     });
 
+    initTooltipPositioning();
     initCollapsibles();
     initAppSelector();
     initButtons();
