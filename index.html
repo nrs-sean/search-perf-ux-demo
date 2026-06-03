@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Search performance UX simulator</title>
+  <title>Performance UX simulator</title>
   <style>
     :root {
       --bg: #f6f7f9;
@@ -84,6 +84,15 @@
       text-decoration: underline;
     }
 
+    .page-footer-byline {
+      text-align: left;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.4;
+      margin-top: 24px;
+      font-weight: 700;
+    }
+
     .controls-card, .panel {
       background: rgba(255,255,255,.88);
       backdrop-filter: blur(10px);
@@ -110,6 +119,23 @@
       align-items: end;
       margin-top: 22px;
       max-width: 100%;
+    }
+
+    .situation-copy {
+      margin-bottom: 2px;
+    }
+
+    .situation-copy h2 {
+      margin: 0 0 8px;
+      font-size: 20px;
+      letter-spacing: -.025em;
+    }
+
+    .situation-copy p {
+      margin: 0 0 12px;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.5;
     }
 
     .stacked-controls {
@@ -944,6 +970,36 @@
     .log-time { color: var(--muted); font-variant-numeric: tabular-nums; }
     .log-message strong { color: var(--ink); }
 
+    .mission-quote {
+      border: 1px solid #f3d4b8;
+      background: #fff7ed;
+      border-radius: 16px;
+      padding: 16px;
+      line-height: 1.5;
+      color: #27334a;
+    }
+
+    .mission-quote h2 {
+      margin: 0 0 10px;
+    }
+
+    .mission-quote blockquote {
+      margin: 0;
+      color: #172033;
+      font-size: 15px;
+      line-height: 1.5;
+      font-weight: 700;
+    }
+
+    .mission-quote cite {
+      display: block;
+      margin-top: 10px;
+      color: var(--muted);
+      font-style: normal;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
     .takeaway {
       border: 1px solid #d9e3ff;
       background: #f4f7ff;
@@ -1316,10 +1372,13 @@
   <main class="page">
     <section class="layout">
       <div>
-        <h1>Search performance UX simulator</h1>
-        <p class="lede">Type in the search box and adjust both debounce delay and server latency to see the tradeoff: debounce controls when the request starts; latency controls how long the server takes once the request is sent.</p>
-        <p class="byline">by Sean Malone</p>
+        <h1>Performance UX simulator</h1>
+        <p class="lede"><strong>For server-backed typeahead, 150–250 ms is usually a good starting point.</strong> Past ~300 ms of debounce, users begin to feel the delay; with high load time, even a “good” debounce may feel slow.</p>
         <section class="controls-card" aria-label="Prototype controls">
+          <div class="situation-copy">
+            <h2>Situation</h2>
+            <p>Adjust both debounce delay and server latency to see the tradeoff: debounce controls when the request starts; latency controls how long the server takes once the request is sent.</p>
+          </div>
           <div class="stacked-controls">
             <div class="control-group">
               <div class="header-actions top-actions" aria-label="Preset and reset controls">
@@ -1393,14 +1452,12 @@
       </section>
       </div>
       <aside class="right-rail">
-        <section class="takeaway header-takeaway">
-          <div class="tile-header">
-            <h2>UX takeaway</h2>
-          </div>
-          <div class="tile-body">
-            <p><strong>For server-backed typeahead, 150–250 ms is usually a good starting point.</strong> Past ~300 ms of debounce, users begin to feel the delay; with high server latency, even a “good” debounce may feel slow.</p>
-          </div>
+        <section class="mission-quote">
+          <h2>Our Mission (in one quote)</h2>
+          <blockquote>“the one thing I’ll say about our clients is typically they wanna move fast. Like, they wanna get to something, and they wanna get to it fast and deal with it and move on.”</blockquote>
+          <cite>—Brad Hammond (2026-06-03)</cite>
         </section>
+
         <div class="right-stack">
         <section class="panel collapsible">
           <div class="tile-header">
@@ -1524,6 +1581,7 @@
       </aside>
 
     </section>
+    <div class="page-footer-byline">by Sean Malone</div>
 
   <script>
     const debounceOptions = [0, 50, 200, 300, 500, 700, 1000];
