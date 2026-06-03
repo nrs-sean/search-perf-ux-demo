@@ -1064,7 +1064,7 @@
             <span class="search-icon">⌕</span>
           </div>
           <div class="hint-row">
-            <span id="modeHint">Mode: 500 ms debounce</span>
+            <span id="modeHint">Mode: debounce doesn’t apply</span>
             <span id="lastQueryHint">No query yet</span>
           </div>
 
@@ -1095,7 +1095,7 @@
           <div class="tile-body">
             <div class="metric-group-header">
               <div class="label-with-info metric-group-title">Performance tradeoff <span class="info-icon has-rich-tooltip" tabindex="0" aria-label="Response-time guidance source">i<span class="info-tooltip">Qualitative thresholds are based on modern responsiveness guidance: Google’s INP Core Web Vital rates ≤200 ms as good and &gt;500 ms as poor, while mobile search latency research shows delays around 7–10 seconds significantly worsen perceived experience. Sources: <a href="https://web.dev/articles/defining-core-web-vitals-thresholds" target="_blank" rel="noopener noreferrer">Google INP thresholds</a>, <a href="https://arxiv.org/abs/2101.09086" target="_blank" rel="noopener noreferrer">mobile search latency study</a>, and <a href="https://www.nngroup.com/articles/response-times-3-important-limits/" target="_blank" rel="noopener noreferrer">classic NN/g response-time guidance</a>.</span></span></div>
-              <p class="explainer metric-group-explainer">Debounce delay and server latency compound. Debounce is the intentional wait before posting; server latency is the unavoidable wait after posting. The user feels the sum of both.</p>
+              <p class="explainer metric-group-explainer">Debounce delay and server latency compound for search interactions. App presets use page-load performance metrics, so debounce doesn’t apply and the demo models the latency value only.</p>
             </div>
             <div class="bars">
               <div class="bar-row">
@@ -1149,7 +1149,7 @@
         <button class="collapse-toggle" type="button" aria-label="Expand Debounce instrumentation" aria-expanded="false"><span class="chevron">⌃</span></button>
       </div>
       <div class="tile-body">
-        <p class="explainer">Measurement lives outside the app. The key UX equation is debounce delay + server latency = perceived wait after the user stops typing.</p>
+        <p class="explainer">Measurement lives outside the app. For search interactions, the UX equation is debounce delay + server latency = perceived wait after the user stops typing. For page-load app presets, debounce doesn’t apply.</p>
 
         <div class="metrics instrumentation" aria-label="Demo instrumentation">
           <div class="metric">
@@ -1179,7 +1179,7 @@
           </div>
           <div class="metric">
             <div class="label">Expected wait</div>
-            <div class="value" id="expectedWait">7000 ms</div>
+            <div class="value" id="expectedWait">6500 ms</div>
             <div class="caption">Debounce + server latency.</div>
           </div>
         </div>
@@ -1209,7 +1209,7 @@
 
   <script>
     const debounceOptions = [0, 50, 200, 300, 500, 700, 1000];
-    let debounceDelay = 500;
+    let debounceDelay = null;
     let latency = 6500;
     let debounceTimer = null;
     let requestSeq = 0;
@@ -1286,6 +1286,21 @@
 
     function initButtons() {
       els.buttons.innerHTML = '';
+
+      const notApplicableBtn = document.createElement('button');
+      notApplicableBtn.textContent = "Doesn't apply";
+      notApplicableBtn.className = debounceDelay === null ? 'active' : '';
+      notApplicableBtn.addEventListener('click', () => {
+        debounceDelay = null;
+        initButtons();
+        updateTradeoffViz();
+        updatePresetPills();
+        els.modeHint.textContent = "Mode: debounce doesn’t apply";
+        addLog("Switched to <strong>Doesn’t apply</strong>: selected app metrics represent page-load performance, not search-query delay.");
+        scheduleSearch();
+      });
+      els.buttons.appendChild(notApplicableBtn);
+
       debounceOptions.forEach(value => {
         const btn = document.createElement('button');
         btn.textContent = value === 0 ? 'None' : `${value} ms`;
@@ -1391,16 +1406,16 @@
       const app = appPerformanceData.find(item => item.name === appName);
       if (!app || !appHasPerformanceData(app)) return;
 
-      debounceDelay = 500;
+      debounceDelay = null;
       latency = latencyFromApp(app);
       els.latencyRange.value = String(latency);
       els.latencyLabel.textContent = `${latency} ms`;
-      els.modeHint.textContent = 'Mode: 500 ms debounce';
+      els.modeHint.textContent = "Mode: debounce doesn’t apply";
       initButtons();
       updateTradeoffViz();
       updatePresetPills();
       updateAppMetricsTooltip(app);
-      addLog(`Applied <strong>${app.displayName || app.name}</strong> preset: 500 ms debounce + ${latency} ms latency from TTI.`);
+      addLog(`Applied <strong>${app.displayName || app.name}</strong> page-load preset: debounce doesn’t apply + ${latency} ms latency from TTI.`);
       scheduleSearch();
       els.input.focus();
     }
@@ -1495,9 +1510,10 @@
     }
 
     function updateTradeoffViz() {
-      const totalWait = debounceDelay + latency;
+      const effectiveDebounce = debounceDelay === null ? 0 : debounceDelay;
+      const totalWait = effectiveDebounce + latency;
       const loadMap = {0: 100, 50: 75, 200: 40, 300: 28, 500: 15, 700: 10, 1000: 6};
-      const load = loadMap[debounceDelay] ?? Math.max(8, 100 - debounceDelay / 5);
+      const load = debounceDelay === null ? 0 : (loadMap[debounceDelay] ?? Math.max(8, 100 - debounceDelay / 5));
       let ux = 92;
       let uxLabel = 'Best';
       if (debounceDelay === 0 && latency < 300) { ux = 82; uxLabel = 'Fast/noisy'; }
@@ -1511,7 +1527,7 @@
       const uxTone = ux >= 80 ? 'metric-good' : ux >= 60 ? 'metric-ok' : ux >= 35 ? 'metric-warn' : 'metric-bad';
 
       els.waitLabel.textContent = `${totalWait} ms`;
-      els.loadLabel.textContent = `${load}%`;
+      els.loadLabel.textContent = debounceDelay === null ? 'N/A' : `${load}%`;
       els.uxLabel.textContent = uxLabel;
       els.waitBar.style.width = `${Math.min(100, totalWait / 100)}%`;
       els.loadBar.style.width = `${load}%`;
@@ -1543,15 +1559,16 @@
       lastKeyTime = performance.now();
       els.lastQueryHint.textContent = `Current query: “${query}”`;
 
-      if (debounceDelay > 0) {
+      const effectiveDebounce = debounceDelay === null ? 0 : debounceDelay;
+      if (effectiveDebounce > 0) {
         setState('Waiting', 'waiting');
-        startProgress(debounceDelay);
-        addLog(`Keystroke captured. Waiting <strong>${debounceDelay} ms</strong> before posting.`);
+        startProgress(effectiveDebounce);
+        addLog(`Keystroke captured. Waiting <strong>${effectiveDebounce} ms</strong> before posting.`);
       } else {
         addLog(`Keystroke captured. Posting <strong>immediately</strong>.`);
       }
 
-      debounceTimer = setTimeout(() => runSearch(query), debounceDelay);
+      debounceTimer = setTimeout(() => runSearch(query), effectiveDebounce);
     }
 
     function runSearch(query) {
@@ -1620,11 +1637,11 @@
       debounceTimer && clearTimeout(debounceTimer);
       clearInterval(progressTimer);
       requestSeq = 0; activeRequest = 0; keystrokes = 0; requests = 0; suppressed = 0;
-      debounceDelay = 500;
+      debounceDelay = null;
       latency = 6500;
       els.latencyRange.value = '6500';
       els.latencyLabel.textContent = '6500 ms';
-      els.modeHint.textContent = 'Mode: 500 ms debounce';
+      els.modeHint.textContent = "Mode: debounce doesn’t apply";
       els.appPresetSelect.value = 'EH List View';
       updateAppMetricsTooltip(appPerformanceData.find(app => app.name === 'EH List View'));
       initButtons();
@@ -1644,7 +1661,7 @@
     initButtons();
     updateTradeoffViz();
     updatePresetPills();
-    addLog('Demo loaded with the <strong>EH today — EH List View</strong> preset. Try typing a search term.');
+    addLog('Demo loaded with the <strong>EH today — EH List View</strong> page-load preset. Debounce is marked as doesn’t apply because this preset is based on page performance metrics, not a search query.');
   </script>
 </body>
 </html>
