@@ -83,7 +83,7 @@
     .controls-card {
       padding: 16px;
       display: grid;
-      grid-template-columns: minmax(0, 1fr) 112px;
+      grid-template-columns: minmax(0, 1fr);
       gap: 18px;
       align-items: end;
       margin-top: 22px;
@@ -129,6 +129,15 @@
       margin-left: auto;
     }
 
+    .header-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      justify-content: flex-end;
+      flex-wrap: nowrap;
+      margin-left: auto;
+    }
+
     .preset-pill {
       border: 1.5px solid #8ec7ef;
       background: #f0f9ff;
@@ -154,6 +163,25 @@
       background: #e0f2fe;
       color: #075985;
       box-shadow: inset 0 0 0 1px rgba(2, 132, 199, .08);
+    }
+
+    .reset-pill {
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--muted);
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 12px;
+      line-height: 1;
+      font-weight: 800;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: .15s ease;
+    }
+
+    .reset-pill:hover {
+      border-color: #bfc8d4;
+      transform: translateY(-1px);
     }
 
 
@@ -527,6 +555,9 @@
     }
 
     @media (max-width: 540px) {
+      .label-row { align-items: flex-start; flex-direction: column; }
+      .header-actions { margin-left: 0; justify-content: flex-start; flex-wrap: wrap; }
+      .preset-pills { margin-left: 0; flex-wrap: wrap; justify-content: flex-start; }
       .segmented { overflow-x: auto; padding-bottom: 2px; }
       .segmented button { flex-basis: auto; }
       .metrics { grid-template-columns: 1fr; }
@@ -546,9 +577,12 @@
             <div class="control-group">
               <div class="label-row">
                 <div class="label">Debounce delay</div>
-                <div class="preset-pills" aria-label="Preset combinations">
-                  <button class="preset-pill" type="button" id="presetNrs">NRS - Typical</button>
-                  <button class="preset-pill" type="button" id="presetEnterprise">Enterprise Standard</button>
+                <div class="header-actions" aria-label="Preset and reset controls">
+                  <div class="preset-pills" aria-label="Preset combinations">
+                    <button class="preset-pill" type="button" id="presetNrs">NRS - Typical</button>
+                    <button class="preset-pill" type="button" id="presetEnterprise">Enterprise Standard</button>
+                  </div>
+                  <button class="reset-pill" id="resetBtn" type="button">Reset demo</button>
                 </div>
               </div>
               <div class="segmented" id="debounceButtons"></div>
@@ -559,7 +593,6 @@
               <div class="range-caption"><span>50 ms</span><span>5,000 ms</span><span>10,000 ms</span></div>
             </div>
           </div>
-          <button class="ghost-button" id="resetBtn">Reset demo</button>
         </section>
       <section class="panel app-panel">
         <div class="app-surface" aria-label="Search application demo">
