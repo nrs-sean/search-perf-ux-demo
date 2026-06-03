@@ -1344,6 +1344,7 @@
         btn.addEventListener('click', () => {
           debounceDelay = value;
           initButtons();
+          clearAppPresetSelection();
           updateTradeoffViz();
           updatePresetPills();
           els.modeHint.textContent = `Mode: ${debounceDelay === 0 ? 'no debounce' : debounceDelay + ' ms debounce'}`;
@@ -1357,8 +1358,9 @@
 
     function updatePresetPills() {
       const enterpriseActive = debounceDelay === 200 && latency === 800;
+      const appPresetActive = debounceDelay === null && els.appPresetSelect.value !== '';
       els.presetEnterprise.classList.toggle('active', enterpriseActive);
-      els.appPresetControl.classList.toggle('is-inactive', enterpriseActive);
+      els.appPresetControl.classList.toggle('is-inactive', !appPresetActive);
     }
 
 
@@ -1412,6 +1414,21 @@
       `;
     }
 
+    function clearAppPresetSelection() {
+      els.appPresetSelect.value = '';
+      els.appPresetControl.classList.add('is-inactive');
+      els.appMetricsTooltip.innerHTML = `
+        <div class="metrics-tooltip-title">No app preset selected</div>
+        <div class="metrics-tooltip-note">Choose an app from the dropdown to view its page-load performance metrics. Manual debounce or latency changes clear the app preset selection.</div>
+      `;
+    }
+
+    function restoreDefaultAppPresetSelection() {
+      els.appPresetSelect.value = 'EH List View';
+      els.appPresetControl.classList.remove('is-inactive');
+      updateAppMetricsTooltip(appPerformanceData.find(app => app.name === 'EH List View'));
+    }
+
     function initAppSelector() {
       const groups = {};
       appPerformanceData.forEach(app => {
@@ -1419,7 +1436,7 @@
         groups[app.category].push(app);
       });
 
-      els.appPresetSelect.innerHTML = '';
+      els.appPresetSelect.innerHTML = '<option value="">Select app performance…</option>';
       Object.entries(groups).forEach(([category, apps]) => {
         const group = document.createElement('optgroup');
         group.label = category;
@@ -1436,11 +1453,15 @@
         els.appPresetSelect.appendChild(group);
       });
 
-      els.appPresetSelect.value = 'EH List View';
-      updateAppMetricsTooltip(appPerformanceData.find(app => app.name === 'EH List View'));
+      restoreDefaultAppPresetSelection();
     }
 
     function applyAppPreset(appName) {
+      if (!appName) {
+        clearAppPresetSelection();
+        updatePresetPills();
+        return;
+      }
       const app = appPerformanceData.find(item => item.name === appName);
       if (!app || !appHasPerformanceData(app)) return;
 
@@ -1452,6 +1473,7 @@
       initButtons();
       updateTradeoffViz();
       updatePresetPills();
+      els.appPresetControl.classList.remove('is-inactive');
       updateAppMetricsTooltip(app);
       addLog(`Applied <strong>${app.displayName || app.name}</strong> page-load preset: debounce doesn’t apply + ${latency} ms latency from TTI.`);
       scheduleSearch();
@@ -1663,13 +1685,17 @@
     els.latencyRange.addEventListener('input', e => {
       latency = Number(e.target.value);
       els.latencyLabel.textContent = `${latency} ms`;
+      clearAppPresetSelection();
       updateTradeoffViz();
       updatePresetPills();
       addLog(`Server latency changed to <strong>${latency} ms</strong>.`);
     });
 
     els.appPresetSelect.addEventListener('change', e => applyAppPreset(e.target.value));
-    els.presetEnterprise.addEventListener('click', () => applyPreset('Enterprise Standard', 200, 800));
+    els.presetEnterprise.addEventListener('click', () => {
+      clearAppPresetSelection();
+      applyPreset('Enterprise Standard', 200, 800);
+    });
 
     els.resetBtn.addEventListener('click', () => {
       debounceTimer && clearTimeout(debounceTimer);
@@ -1680,8 +1706,7 @@
       els.latencyRange.value = '6500';
       els.latencyLabel.textContent = '6500 ms';
       els.modeHint.textContent = "Mode: debounce doesn’t apply";
-      els.appPresetSelect.value = 'EH List View';
-      updateAppMetricsTooltip(appPerformanceData.find(app => app.name === 'EH List View'));
+      restoreDefaultAppPresetSelection();
       initButtons();
       updatePresetPills();
       els.input.value = '';
