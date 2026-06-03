@@ -185,66 +185,76 @@
 
 
     .metrics-tooltip {
-      width: 560px;
-      max-width: min(560px, calc(100vw - 48px));
-      padding: 0;
-      overflow: hidden;
-      border-radius: 10px;
+      width: 520px;
+      max-width: min(520px, calc(100vw - 48px));
+      padding: 14px;
+      overflow: visible;
+      border-radius: 14px;
       background: #fff;
       color: var(--ink);
       border: 1px solid #d9dee7;
       box-shadow: 0 14px 34px rgba(23, 32, 51, .22);
     }
 
-    .metrics-tooltip table {
-      width: 100%;
-      border-collapse: collapse;
-      table-layout: fixed;
-      font-size: 11px;
-      line-height: 1.15;
-      background: #fff;
-    }
-
-    .metrics-tooltip th,
-    .metrics-tooltip td {
-      border-right: 1px solid #d9dee7;
-      border-bottom: 1px solid #d9dee7;
-      text-align: center;
-      padding: 7px 6px;
-      vertical-align: bottom;
-    }
-
-    .metrics-tooltip th:last-child,
-    .metrics-tooltip td:last-child {
-      border-right: 0;
-    }
-
-    .metrics-tooltip th {
-      height: 82px;
+    .metrics-tooltip-title {
+      font-size: 13px;
       font-weight: 900;
       color: #0f172a;
+      margin-bottom: 10px;
+      letter-spacing: -.01em;
+    }
+
+    .metrics-tooltip-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .metric-tooltip-cell {
+      border: 1px solid #d9dee7;
+      border-radius: 10px;
+      overflow: hidden;
       background: #fff;
-      vertical-align: bottom;
+      min-width: 0;
     }
 
-    .metrics-tooltip td {
-      font-size: 16px;
-      font-weight: 500;
+    .metric-tooltip-cell .metric-name {
+      min-height: 58px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      text-align: center;
+      padding: 8px 6px;
+      color: #0f172a;
+      font-size: 10px;
+      line-height: 1.15;
+      font-weight: 900;
+      background: #fff;
+    }
+
+    .metric-tooltip-cell .metric-value {
+      text-align: center;
+      padding: 8px 6px;
       color: #111827;
+      font-size: 20px;
+      line-height: 1;
+      font-weight: 800;
       background: #f6c6c3;
-      vertical-align: middle;
+      border-top: 1px solid #d9dee7;
     }
 
-    .metrics-tooltip td.good {
+    .metric-tooltip-cell.good .metric-value {
       background: #bfe3d0;
     }
 
-    .metrics-tooltip .metric-source-row td {
-      background: #f8fafc;
+    .metrics-tooltip-note {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid #e5e7eb;
       color: var(--muted);
-      font-size: 10px;
-      text-align: left;
-      padding: 6px 8px;
+      font-size: 11px;
+      line-height: 1.35;
+      font-weight: 700;
     }
 
     .preset-info.has-rich-tooltip .metrics-tooltip {
@@ -265,6 +275,16 @@
     .preset-info.has-rich-tooltip .metrics-tooltip::after {
       left: auto;
       right: 16px;
+    }
+
+    @media (max-width: 720px) {
+      .metrics-tooltip {
+        width: calc(100vw - 48px);
+      }
+
+      .metrics-tooltip-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
     }
 
     .preset-with-info {
@@ -962,33 +982,38 @@
                 <div class="header-actions" aria-label="Preset and reset controls">
                   <div class="preset-pills" aria-label="Preset combinations">
                     <button class="preset-pill preset-with-info" type="button" id="presetNrs">EH today <span class="info-icon preset-info has-rich-tooltip" tabindex="0" aria-label="EH today observed performance metrics">i<span class="info-tooltip metrics-tooltip">
-                      <table aria-label="EH today observed performance metrics">
-                        <thead>
-                          <tr>
-                            <th>First<br>Contentful<br>Paint<br>(FCP)</th>
-                            <th>Speed<br>Index</th>
-                            <th>Largest<br>Contentful<br>Paint<br>(LCP)</th>
-                            <th>Total<br>Blocking<br>Time<br>(TBT)</th>
-                            <th>Cumulative<br>Layout<br>Shift<br>(CLS)<br>(score)</th>
-                            <th>Time to<br>Interactive<br>(TTI)</th>
-                            <th>Time to<br>Interactive<br>Observed<br>(TTI-O)</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr>
-                            <td>5.3</td>
-                            <td>5.3</td>
-                            <td>5.8</td>
-                            <td class="good">110.0</td>
-                            <td class="good">0.0</td>
-                            <td>6.5</td>
-                            <td>17.1</td>
-                          </tr>
-                          <tr class="metric-source-row">
-                            <td colspan="7">Observed runs: 16.22s, 17.90s, 17.10s · Observed avg: 17.07s</td>
-                          </tr>
-                        </tbody>
-                      </table>
+                      <div class="metrics-tooltip-title">EH today observed performance metrics</div>
+                      <div class="metrics-tooltip-grid" aria-label="EH today observed performance metrics">
+                        <div class="metric-tooltip-cell">
+                          <div class="metric-name">First Contentful Paint (FCP)</div>
+                          <div class="metric-value">5.3</div>
+                        </div>
+                        <div class="metric-tooltip-cell">
+                          <div class="metric-name">Speed Index</div>
+                          <div class="metric-value">5.3</div>
+                        </div>
+                        <div class="metric-tooltip-cell">
+                          <div class="metric-name">Largest Contentful Paint (LCP)</div>
+                          <div class="metric-value">5.8</div>
+                        </div>
+                        <div class="metric-tooltip-cell good">
+                          <div class="metric-name">Total Blocking Time (TBT)</div>
+                          <div class="metric-value">110.0</div>
+                        </div>
+                        <div class="metric-tooltip-cell good">
+                          <div class="metric-name">Cumulative Layout Shift (CLS score)</div>
+                          <div class="metric-value">0.0</div>
+                        </div>
+                        <div class="metric-tooltip-cell">
+                          <div class="metric-name">Time to Interactive (TTI)</div>
+                          <div class="metric-value">6.5</div>
+                        </div>
+                        <div class="metric-tooltip-cell">
+                          <div class="metric-name">Time to Interactive Observed (TTI-O)</div>
+                          <div class="metric-value">17.1</div>
+                        </div>
+                      </div>
+                      <div class="metrics-tooltip-note">Observed runs: 16.22s, 17.90s, 17.10s · Observed avg: 17.07s</div>
                     </span></span></button>
                     <button class="preset-pill" type="button" id="presetEnterprise">Enterprise Standard</button>
                   </div>
