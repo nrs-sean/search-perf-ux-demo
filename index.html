@@ -183,6 +183,90 @@
     }
 
 
+
+    .metrics-tooltip {
+      width: 560px;
+      max-width: min(560px, calc(100vw - 48px));
+      padding: 0;
+      overflow: hidden;
+      border-radius: 10px;
+      background: #fff;
+      color: var(--ink);
+      border: 1px solid #d9dee7;
+      box-shadow: 0 14px 34px rgba(23, 32, 51, .22);
+    }
+
+    .metrics-tooltip table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      font-size: 11px;
+      line-height: 1.15;
+      background: #fff;
+    }
+
+    .metrics-tooltip th,
+    .metrics-tooltip td {
+      border-right: 1px solid #d9dee7;
+      border-bottom: 1px solid #d9dee7;
+      text-align: center;
+      padding: 7px 6px;
+      vertical-align: bottom;
+    }
+
+    .metrics-tooltip th:last-child,
+    .metrics-tooltip td:last-child {
+      border-right: 0;
+    }
+
+    .metrics-tooltip th {
+      height: 82px;
+      font-weight: 900;
+      color: #0f172a;
+      background: #fff;
+      vertical-align: bottom;
+    }
+
+    .metrics-tooltip td {
+      font-size: 16px;
+      font-weight: 500;
+      color: #111827;
+      background: #f6c6c3;
+      vertical-align: middle;
+    }
+
+    .metrics-tooltip td.good {
+      background: #bfe3d0;
+    }
+
+    .metrics-tooltip .metric-source-row td {
+      background: #f8fafc;
+      color: var(--muted);
+      font-size: 10px;
+      text-align: left;
+      padding: 6px 8px;
+    }
+
+    .preset-info.has-rich-tooltip .metrics-tooltip {
+      left: auto;
+      right: -10px;
+      top: calc(100% + 10px);
+      transform: translateY(2px);
+    }
+
+    .preset-info.has-rich-tooltip:hover .metrics-tooltip,
+    .preset-info.has-rich-tooltip:focus-visible .metrics-tooltip,
+    .preset-info.has-rich-tooltip:focus-within .metrics-tooltip {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .preset-info.has-rich-tooltip .metrics-tooltip::after {
+      left: auto;
+      right: 16px;
+    }
+
     .preset-with-info {
       display: inline-flex;
       align-items: center;
@@ -877,7 +961,35 @@
                 <div class="label">Debounce delay</div>
                 <div class="header-actions" aria-label="Preset and reset controls">
                   <div class="preset-pills" aria-label="Preset combinations">
-                    <button class="preset-pill preset-with-info" type="button" id="presetNrs">EH today <span class="info-icon preset-info" tabindex="0" aria-label="EH today observed performance metrics">i<span class="info-tooltip">FCP: 5.3s<br>Speed Index: 5.3s<br>LCP: 5.8s<br>TBT: 110.0ms<br>CLS score: 0.0<br>TTI: 6.5s<br>Observed 1: 16.22s<br>Observed 2: 17.90s<br>Observed 3: 17.10s<br>Observed avg: 17.07s<br>TTI-O: 17.1s</span></span></button>
+                    <button class="preset-pill preset-with-info" type="button" id="presetNrs">EH today <span class="info-icon preset-info has-rich-tooltip" tabindex="0" aria-label="EH today observed performance metrics">i<span class="info-tooltip metrics-tooltip">
+                      <table aria-label="EH today observed performance metrics">
+                        <thead>
+                          <tr>
+                            <th>First<br>Contentful<br>Paint<br>(FCP)</th>
+                            <th>Speed<br>Index</th>
+                            <th>Largest<br>Contentful<br>Paint<br>(LCP)</th>
+                            <th>Total<br>Blocking<br>Time<br>(TBT)</th>
+                            <th>Cumulative<br>Layout<br>Shift<br>(CLS)<br>(score)</th>
+                            <th>Time to<br>Interactive<br>(TTI)</th>
+                            <th>Time to<br>Interactive<br>Observed<br>(TTI-O)</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td>5.3</td>
+                            <td>5.3</td>
+                            <td>5.8</td>
+                            <td class="good">110.0</td>
+                            <td class="good">0.0</td>
+                            <td>6.5</td>
+                            <td>17.1</td>
+                          </tr>
+                          <tr class="metric-source-row">
+                            <td colspan="7">Observed runs: 16.22s, 17.90s, 17.10s · Observed avg: 17.07s</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </span></span></button>
                     <button class="preset-pill" type="button" id="presetEnterprise">Enterprise Standard</button>
                   </div>
                   <button class="reset-pill" id="resetBtn" type="button">Reset demo</button>
