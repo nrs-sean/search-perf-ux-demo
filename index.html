@@ -1941,6 +1941,15 @@
       els.suppressed.textContent = suppressed;
     }
 
+    function formatCompactMs(value) {
+      const numeric = Number(value);
+      if (!Number.isFinite(numeric)) return '—';
+      if (Math.abs(numeric) >= 1000) {
+        return `${(numeric / 1000).toFixed(1)}k ms`;
+      }
+      return `${numeric} ms`;
+    }
+
     function setMetricColor(el, tone) {
       el.classList.remove('metric-good', 'metric-ok', 'metric-warn', 'metric-bad');
       el.classList.add(tone);
@@ -1997,7 +2006,7 @@
       const loadTone = load <= 20 ? 'metric-good' : load <= 50 ? 'metric-ok' : load <= 75 ? 'metric-warn' : 'metric-bad';
       const uxTone = ux >= 80 ? 'metric-good' : ux >= 60 ? 'metric-ok' : ux >= 35 ? 'metric-warn' : 'metric-bad';
 
-      els.waitLabel.textContent = `${totalWait} ms`;
+      els.waitLabel.textContent = formatCompactMs(totalWait);
       els.loadLabel.textContent = debounceDelay === null ? 'N/A' : `${load}%`;
       els.uxLabel.textContent = uxLabel;
       els.waitBar.style.width = `${Math.min(100, totalWait / 100)}%`;
