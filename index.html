@@ -776,7 +776,7 @@
       left: 0;
       top: calc(100% + 6px);
       transform: translateY(2px);
-      width: 300px;
+      width: 360px;
       padding: 10px 12px;
       border-radius: 12px;
       background: #172033;
@@ -1071,12 +1071,12 @@
         <div class="right-stack">
         <section class="panel collapsible">
           <div class="tile-header">
-            <h2 class="label-with-info">What this demonstrates <span class="info-icon has-rich-tooltip" tabindex="0" aria-label="Response-time guidance source">i<span class="info-tooltip">Qualitative thresholds are loosely based on Jakob Nielsen / NN/g response-time guidance: 0.1s feels instant, 1s preserves flow, and 10s risks attention loss. <a href="https://www.nngroup.com/articles/response-times-3-important-limits/" target="_blank" rel="noopener noreferrer">Read source</a>.</span></span></h2>
+            <h2 class="label-with-info">What this demonstrates <span class="info-icon has-rich-tooltip" tabindex="0" aria-label="Response-time guidance source">i<span class="info-tooltip">Qualitative thresholds are based on modern responsiveness guidance: Google’s INP Core Web Vital rates ≤200 ms as good and &gt;500 ms as poor, while mobile search latency research shows delays around 7–10 seconds significantly worsen perceived experience. Sources: <a href="https://web.dev/articles/defining-core-web-vitals-thresholds" target="_blank" rel="noopener noreferrer">Google INP thresholds</a>, <a href="https://arxiv.org/abs/2101.09086" target="_blank" rel="noopener noreferrer">mobile search latency study</a>, and <a href="https://www.nngroup.com/articles/response-times-3-important-limits/" target="_blank" rel="noopener noreferrer">classic NN/g response-time guidance</a>.</span></span></h2>
             <button class="collapse-toggle" type="button" aria-label="Collapse What this demonstrates" aria-expanded="true"><span class="chevron">⌃</span></button>
           </div>
           <div class="tile-body">
             <div class="metric-group-header">
-              <div class="label-with-info metric-group-title">Performance tradeoff <span class="info-icon has-rich-tooltip" tabindex="0" aria-label="Response-time guidance source">i<span class="info-tooltip">Qualitative thresholds are loosely based on Jakob Nielsen / NN/g response-time guidance: 0.1s feels instant, 1s preserves flow, and 10s risks attention loss. <a href="https://www.nngroup.com/articles/response-times-3-important-limits/" target="_blank" rel="noopener noreferrer">Read source</a>.</span></span></div>
+              <div class="label-with-info metric-group-title">Performance tradeoff <span class="info-icon has-rich-tooltip" tabindex="0" aria-label="Response-time guidance source">i<span class="info-tooltip">Qualitative thresholds are based on modern responsiveness guidance: Google’s INP Core Web Vital rates ≤200 ms as good and &gt;500 ms as poor, while mobile search latency research shows delays around 7–10 seconds significantly worsen perceived experience. Sources: <a href="https://web.dev/articles/defining-core-web-vitals-thresholds" target="_blank" rel="noopener noreferrer">Google INP thresholds</a>, <a href="https://arxiv.org/abs/2101.09086" target="_blank" rel="noopener noreferrer">mobile search latency study</a>, and <a href="https://www.nngroup.com/articles/response-times-3-important-limits/" target="_blank" rel="noopener noreferrer">classic NN/g response-time guidance</a>.</span></span></div>
               <p class="explainer metric-group-explainer">Debounce delay and server latency compound. Debounce is the intentional wait before posting; server latency is the unavoidable wait after posting. The user feels the sum of both.</p>
             </div>
             <div class="bars">
@@ -1097,7 +1097,7 @@
               </div>
             </div>
             <div class="funnel-inline">
-              <div class="label-with-info metric-group-title">Willingness to wait <span class="info-icon has-rich-tooltip" tabindex="0" aria-label="Willingness to wait source">i<span class="info-tooltip">Illustrative funnel based on published response-time guidance: NN/g’s 1s and 10s thresholds, plus Forrester/Akamai’s finding that 40% of consumers wait no more than 3s for a page to render. <a href="https://www.ir.akamai.com/news-releases/news-release-details/akamai-reveals-2-seconds-new-threshold-acceptability-ecommerce" target="_blank" rel="noopener noreferrer">Akamai/Forrester source</a>.</span></span></div>
+              <div class="label-with-info metric-group-title">Willingness to wait <span class="info-icon has-rich-tooltip" tabindex="0" aria-label="Willingness to wait source">i<span class="info-tooltip">Qualitative thresholds are based on modern responsiveness guidance: Google’s INP Core Web Vital rates ≤200 ms as good and &gt;500 ms as poor, while mobile search latency research shows delays around 7–10 seconds significantly worsen perceived experience. Sources: <a href="https://web.dev/articles/defining-core-web-vitals-thresholds" target="_blank" rel="noopener noreferrer">Google INP thresholds</a>, <a href="https://arxiv.org/abs/2101.09086" target="_blank" rel="noopener noreferrer">mobile search latency study</a>, and <a href="https://www.nngroup.com/articles/response-times-3-important-limits/" target="_blank" rel="noopener noreferrer">classic NN/g response-time guidance</a>.</span></span></div>
               <p class="explainer metric-group-explainer">Starting with 100 users, this estimates how many may still be willing to wait as total time to first results increases.</p>
               <div class="funnel">
                 <div class="funnel-row">
