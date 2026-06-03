@@ -596,6 +596,26 @@
       font-weight: 700;
     }
 
+    .page-reload-button {
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--muted);
+      border-radius: 999px;
+      padding: 8px 11px;
+      font-size: 12px;
+      line-height: 1;
+      font-weight: 900;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: .15s ease;
+    }
+
+    .page-reload-button:hover {
+      border-color: #bfc8d4;
+      color: var(--ink);
+      transform: translateY(-1px);
+    }
+
     .page-load-content {
       padding: 16px;
       display: grid;
@@ -1300,7 +1320,7 @@
                   <div class="page-load-title" id="pageLoadTitle">EH List View</div>
                   <div class="page-load-meta" id="pageLoadMeta">Simulated page-load experience</div>
                 </div>
-                <span class="result-badge">Page</span>
+                <button class="page-reload-button" id="pageReloadBtn" type="button">Reload</button>
               </div>
               <div class="page-load-content" id="pageLoadContent"></div>
             </div>
@@ -1465,6 +1485,7 @@
     let suppressed = 0;
     let lastKeyTime = null;
     let progressTimer = null;
+    let pageLoadTitleOverride = null;
 
     const sampleResults = [
       'Investor engagement summary',
@@ -1506,6 +1527,7 @@
       pageLoadContent: document.getElementById('pageLoadContent'),
       pageLoadTitle: document.getElementById('pageLoadTitle'),
       pageLoadMeta: document.getElementById('pageLoadMeta'),
+      pageReloadBtn: document.getElementById('pageReloadBtn'),
       searchTab: document.getElementById('searchTab'),
       pageLoadTab: document.getElementById('pageLoadTab'),
       pageLoadLabel: document.getElementById('pageLoadLabel'),
@@ -1641,6 +1663,7 @@
     }
 
     function clearAppPresetSelection() {
+      pageLoadTitleOverride = null;
       els.appPresetSelect.value = '';
       els.appPresetControl.classList.add('is-inactive');
       setExperienceMode('search');
@@ -1651,6 +1674,7 @@
     }
 
     function restoreDefaultAppPresetSelection() {
+      pageLoadTitleOverride = null;
       els.appPresetSelect.value = 'EH List View';
       els.appPresetControl.classList.remove('is-inactive');
       updateAppMetricsTooltip(appPerformanceData.find(app => app.name === 'EH List View'));
@@ -1690,6 +1714,7 @@
         updatePresetPills();
         return;
       }
+      pageLoadTitleOverride = null;
       const app = appPerformanceData.find(item => item.name === appName);
       if (!app || !appHasPerformanceData(app)) return;
 
@@ -1708,6 +1733,7 @@
     }
 
     function applyPreset(label, nextDebounce, nextLatency) {
+      pageLoadTitleOverride = null;
       debounceDelay = nextDebounce;
       latency = nextLatency;
       els.latencyRange.value = String(nextLatency);
@@ -1716,7 +1742,8 @@
       initButtons();
       updateTradeoffViz();
       updatePresetPills();
-      addLog(`Applied <strong>${label}</strong> preset: ${nextDebounce} ms debounce + ${nextLatency} ms server latency.`);
+      setExperienceMode('search');
+      addLog(`Applied <strong>${label}</strong> search-query preset: ${nextDebounce} ms debounce + ${nextLatency} ms time to load.`);
       scheduleSearch();
       els.input.focus();
     }
@@ -1743,6 +1770,7 @@
       }
     }
     function selectedAppName() {
+      if (pageLoadTitleOverride) return pageLoadTitleOverride;
       const app = appPerformanceData.find(item => item.name === els.appPresetSelect.value);
       return app?.displayName || app?.name || 'Application view';
     }
@@ -2032,8 +2060,25 @@
 
     els.appPresetSelect.addEventListener('change', e => applyAppPreset(e.target.value));
     els.presetEnterprise.addEventListener('click', () => {
+      const pageMode = els.pageLoadExperience.classList.contains('active');
       clearAppPresetSelection();
-      applyPreset('Enterprise Standard', 200, 800);
+
+      if (pageMode) {
+        pageLoadTitleOverride = 'Enterprise Standard';
+        debounceDelay = null;
+        latency = 800;
+        els.latencyRange.value = '800';
+        els.latencyLabel.textContent = '800 ms';
+        els.modeHint.textContent = 'Mode: Simple page load — debounce doesn’t apply';
+        initButtons();
+        updateTradeoffViz();
+        updatePresetPills();
+        setExperienceMode('page');
+        addLog('Applied <strong>Enterprise Standard</strong> page-load example: debounce doesn’t apply + 800 ms time to load.');
+        runPageLoad('Enterprise Standard');
+      } else {
+        applyPreset('Enterprise Standard', 200, 800);
+      }
     });
 
     els.resetBtn.addEventListener('click', () => {
@@ -2059,29 +2104,38 @@
 
 
     els.searchTab.addEventListener('click', () => {
-      debounceDelay = 200;
+      const wasPageLoadMode = els.pageLoadExperience.classList.contains('active');
+      if (wasPageLoadMode && els.appPresetSelect.value !== '') {
+        clearAppPresetSelection();
+      }
+
+      if (debounceDelay === null) {
+        debounceDelay = 200;
+      }
+
       initButtons();
-      clearAppPresetSelection();
       updateTradeoffViz();
       updatePresetPills();
-      els.modeHint.textContent = 'Mode: 200 ms debounce';
       setExperienceMode('search');
-      addLog('Switched to <strong>Search Query</strong> mode.');
+      els.modeHint.textContent = `Mode: ${debounceDelay === 0 ? '0 ms debounce' : debounceDelay + ' ms debounce'}`;
+      addLog('Switched to <strong>Search Query</strong> mode and cleared the page-load dropdown selection.');
       scheduleSearch();
       els.input.focus();
     });
 
     els.pageLoadTab.addEventListener('click', () => {
-      debounceDelay = null;
-      restoreDefaultAppPresetSelection();
-      initButtons();
-      updateTradeoffViz();
-      updatePresetPills();
-      els.modeHint.textContent = 'Mode: Simple page load — debounce doesn’t apply';
-      addLog('Switched to <strong>Page Load</strong> mode.');
+      setExperienceMode('page');
+      els.modeHint.textContent = debounceDelay === null
+        ? 'Mode: Simple page load — debounce doesn’t apply'
+        : 'Mode: Page Load preview — debounce setting unchanged';
+      addLog('Switched to <strong>Page Load</strong> view without changing the selected settings.');
       runPageLoad(selectedAppName());
     });
 
+
+    els.pageReloadBtn.addEventListener('click', () => {
+      runPageLoad(selectedAppName());
+    });
 
     initCollapsibles();
     initAppSelector();
