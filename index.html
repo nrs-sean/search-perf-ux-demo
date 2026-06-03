@@ -624,6 +624,57 @@
       opacity: 1;
     }
 
+    .info-icon.has-rich-tooltip::after,
+    .info-icon.has-rich-tooltip::before {
+      display: none;
+    }
+
+    .info-tooltip {
+      position: absolute;
+      left: 50%;
+      bottom: calc(100% + 8px);
+      transform: translateX(-50%) translateY(2px);
+      width: 280px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: #172033;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.4;
+      text-transform: none;
+      letter-spacing: 0;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .15s ease, transform .15s ease;
+      z-index: 30;
+      box-shadow: 0 10px 24px rgba(23, 32, 51, .18);
+      text-align: left;
+    }
+
+    .info-tooltip::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 100%;
+      transform: translateX(-50%);
+      border: 5px solid transparent;
+      border-top-color: #172033;
+    }
+
+    .info-tooltip a {
+      color: #93c5fd;
+      text-decoration: underline;
+    }
+
+    .info-icon.has-rich-tooltip:hover .info-tooltip,
+    .info-icon.has-rich-tooltip:focus-visible .info-tooltip,
+    .info-icon.has-rich-tooltip:focus-within .info-tooltip {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+      pointer-events: auto;
+    }
+
     .tile-header {
       display: flex;
       align-items: center;
@@ -773,7 +824,7 @@
         <div class="right-stack">
         <section class="panel collapsible">
           <div class="tile-header">
-            <h2>What this demonstrates</h2>
+            <h2 class="label-with-info">What this demonstrates <span class="info-icon has-rich-tooltip" tabindex="0" aria-label="Response-time guidance source">i<span class="info-tooltip">Qualitative thresholds are loosely based on Jakob Nielsen / NN/g response-time guidance: 0.1s feels instant, 1s preserves flow, and 10s risks attention loss. <a href="https://www.nngroup.com/articles/response-times-3-important-limits/" target="_blank" rel="noopener noreferrer">Read source</a>.</span></span></h2>
             <button class="collapse-toggle" type="button" aria-label="Collapse What this demonstrates" aria-expanded="true"><span class="chevron">⌃</span></button>
           </div>
           <div class="tile-body">
