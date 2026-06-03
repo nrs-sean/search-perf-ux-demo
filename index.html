@@ -1125,7 +1125,7 @@
             <span class="search-icon">⌕</span>
           </div>
           <div class="hint-row">
-            <span id="modeHint">Mode: debounce doesn’t apply</span>
+            <span id="modeHint">Mode: Simple page load — debounce doesn’t apply</span>
             <span id="lastQueryHint">No query yet</span>
           </div>
 
@@ -1357,7 +1357,7 @@
         initButtons();
         updateTradeoffViz();
         updatePresetPills();
-        els.modeHint.textContent = "Mode: debounce doesn’t apply";
+        els.modeHint.textContent = "Mode: Simple page load — debounce doesn’t apply";
         addLog("Switched to <strong>Doesn’t apply</strong>: selected app metrics represent page-load performance, not search-query delay.");
         scheduleSearch();
       });
@@ -1497,7 +1497,7 @@
       latency = latencyFromApp(app);
       els.latencyRange.value = String(latency);
       els.latencyLabel.textContent = `${latency} ms`;
-      els.modeHint.textContent = "Mode: debounce doesn’t apply";
+      els.modeHint.textContent = "Mode: Simple page load — debounce doesn’t apply";
       initButtons();
       updateTradeoffViz();
       updatePresetPills();
@@ -1734,7 +1734,7 @@
       latency = 6500;
       els.latencyRange.value = '6500';
       els.latencyLabel.textContent = '6500 ms';
-      els.modeHint.textContent = "Mode: debounce doesn’t apply";
+      els.modeHint.textContent = "Mode: Simple page load — debounce doesn’t apply";
       restoreDefaultAppPresetSelection();
       initButtons();
       updatePresetPills();
