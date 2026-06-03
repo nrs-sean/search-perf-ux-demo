@@ -67,6 +67,14 @@
       margin: 0;
     }
 
+    .lede.disclaimer {
+      font-size: 13px;
+      line-height: 1.45;
+      margin-top: 10px;
+      color: var(--muted);
+      max-width: 780px;
+    }
+
     .byline {
       color: var(--muted);
       font-size: 13px;
@@ -1698,6 +1706,7 @@
       <div>
         <h1>Performance UX simulator</h1>
         <p class="lede"><strong>For server-backed typeahead, 150–250 ms is usually a good starting point.</strong> Past ~300 ms of debounce, users begin to feel the delay; with high load time, even a “good” debounce may feel slow.</p>
+        <p class="lede disclaimer"><strong>Disclaimer:</strong> Performance data for these applications were taken Q1 2025 and may not represent exact performance numbers today.</p>
         <section class="controls-card" aria-label="Prototype controls">
           <div class="situation-copy">
             <div class="situation-header">
