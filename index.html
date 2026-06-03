@@ -506,11 +506,55 @@
       padding: 18px;
     }
 
-    .app-experience-title {
+    .experience-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
       margin: 0 0 14px;
+    }
+
+    .app-experience-title {
+      margin: 0;
       font-size: 24px;
       line-height: 1.1;
       letter-spacing: -.035em;
+    }
+
+    .experience-tabs {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      border: 1px solid var(--border);
+      background: #f8fafc;
+      border-radius: 999px;
+      padding: 4px;
+      flex: 0 0 auto;
+    }
+
+    .experience-tab {
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      border-radius: 999px;
+      padding: 7px 10px;
+      font-size: 12px;
+      line-height: 1;
+      font-weight: 900;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: .15s ease;
+    }
+
+    .experience-tab:hover {
+      color: var(--ink);
+      background: #fff;
+    }
+
+    .experience-tab.active {
+      color: #fff;
+      background: var(--accent);
+      box-shadow: 0 8px 18px rgba(49, 94, 251, .20);
     }
 
     .experience-panel {
@@ -1233,7 +1277,13 @@
         </section>
       <section class="panel app-panel">
         <div class="app-surface" aria-label="Search application demo">
-          <h2 class="app-experience-title">Get the experience</h2>
+          <div class="experience-header">
+            <h2 class="app-experience-title">Get the experience</h2>
+            <div class="experience-tabs" role="tablist" aria-label="Experience mode">
+              <button class="experience-tab" type="button" id="searchTab" role="tab" aria-controls="searchExperience">Search Query</button>
+              <button class="experience-tab active" type="button" id="pageLoadTab" role="tab" aria-controls="pageLoadExperience">Page Load</button>
+            </div>
+          </div>
           <div class="hint-row" style="display:none;">
             <span id="modeHint">Mode: Simple page load — debounce doesn’t apply</span>
             <span id="lastQueryHint">Page load preset selected</span>
@@ -1456,6 +1506,8 @@
       pageLoadContent: document.getElementById('pageLoadContent'),
       pageLoadTitle: document.getElementById('pageLoadTitle'),
       pageLoadMeta: document.getElementById('pageLoadMeta'),
+      searchTab: document.getElementById('searchTab'),
+      pageLoadTab: document.getElementById('pageLoadTab'),
       pageLoadLabel: document.getElementById('pageLoadLabel'),
       searchLabel: document.getElementById('searchLabel'),
       eventLog: document.getElementById('eventLog'),
@@ -1678,6 +1730,10 @@
       const pageMode = mode === 'page';
       els.pageLoadExperience.classList.toggle('active', pageMode);
       els.searchExperience.classList.toggle('active', !pageMode);
+      els.pageLoadTab.classList.toggle('active', pageMode);
+      els.searchTab.classList.toggle('active', !pageMode);
+      els.pageLoadTab.setAttribute('aria-selected', String(pageMode));
+      els.searchTab.setAttribute('aria-selected', String(!pageMode));
       if (pageMode) {
         els.lastQueryHint.textContent = 'Page load preset selected';
         els.pageLoadLabel.textContent = 'Application page load — preset selected';
@@ -1686,7 +1742,6 @@
         els.searchLabel.textContent = 'Application search — no query yet';
       }
     }
-
     function selectedAppName() {
       const app = appPerformanceData.find(item => item.name === els.appPresetSelect.value);
       return app?.displayName || app?.name || 'Application view';
@@ -2001,6 +2056,32 @@
       runPageLoad('EH List View');
       addLog('Demo reset.');
     });
+
+
+    els.searchTab.addEventListener('click', () => {
+      debounceDelay = 200;
+      initButtons();
+      clearAppPresetSelection();
+      updateTradeoffViz();
+      updatePresetPills();
+      els.modeHint.textContent = 'Mode: 200 ms debounce';
+      setExperienceMode('search');
+      addLog('Switched to <strong>Search Query</strong> mode.');
+      scheduleSearch();
+      els.input.focus();
+    });
+
+    els.pageLoadTab.addEventListener('click', () => {
+      debounceDelay = null;
+      restoreDefaultAppPresetSelection();
+      initButtons();
+      updateTradeoffViz();
+      updatePresetPills();
+      els.modeHint.textContent = 'Mode: Simple page load — debounce doesn’t apply';
+      addLog('Switched to <strong>Page Load</strong> mode.');
+      runPageLoad(selectedAppName());
+    });
+
 
     initCollapsibles();
     initAppSelector();
