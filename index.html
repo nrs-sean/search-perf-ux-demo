@@ -1486,6 +1486,94 @@
       margin: 12px 0 0;
     }
 
+    .sentiment-legend {
+      margin-top: 18px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+
+    .sentiment-legend-title {
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 900;
+      margin-bottom: 12px;
+    }
+
+    .sentiment-scale {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 8px;
+      align-items: start;
+    }
+
+    .sentiment-scale::before {
+      content: "";
+      position: absolute;
+      left: 8%;
+      right: 8%;
+      top: 23px;
+      height: 2px;
+      background: linear-gradient(90deg, #16a34a, #84cc16, #f59e0b, #ef4444, #991b1b);
+      border-radius: 999px;
+      z-index: 0;
+    }
+
+    .sentiment-point {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      justify-items: center;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.2;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .sentiment-face {
+      width: 46px;
+      height: 46px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #fff;
+      border-radius: 999px;
+      background: #F9FAFB;
+      box-shadow: 0 2px 8px rgba(16, 24, 40, .08);
+      font-size: 22px;
+      line-height: 1;
+    }
+
+    .sentiment-time {
+      color: #344054;
+      font-weight: 900;
+    }
+
+    .sentiment-label {
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    @media (max-width: 540px) {
+      .sentiment-scale {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+
+      .sentiment-scale::before {
+        display: none;
+      }
+
+      .sentiment-point {
+        grid-template-columns: 46px 1fr;
+        justify-items: start;
+        text-align: left;
+        align-items: center;
+      }
+    }
+
     .tradeoff-connector {
       display: grid;
       justify-items: center;
@@ -1801,7 +1889,7 @@
     <section class="layout">
       <div>
         <h1>Performance UX simulator</h1>
-        <p class="lede"><strong>For server-backed typeahead, 150–250 ms is usually a good starting point.</strong> Past ~300 ms of debounce, users begin to feel the delay; with high load time, even a “good” debounce may feel slow.</p>
+        <p class="lede"><strong>For server-backed typeahead, 150–250 ms is usually a good starting point.</strong> For SaaS page loads, key content within ~3s and full load within ~5s are reasonable targets; past those ranges, the experience starts to feel meaningfully slower.</p>
         <p class="lede disclaimer"><strong>Disclaimer:</strong> Performance data gathered in Q1 2025 using Google DevTools, may not represent today’s performance.</p>
         <section class="controls-card" aria-label="Prototype controls">
           <div class="situation-copy">
@@ -1902,13 +1990,13 @@
         <div class="right-stack">
         <section class="panel collapsible">
           <div class="tile-header">
-            <h2 class="label-with-info">What this demonstrates <span class="info-icon has-rich-tooltip" tabindex="0" aria-label="Response-time guidance source">i<span class="info-tooltip">Qualitative thresholds are based on modern responsiveness guidance: Google’s INP Core Web Vital rates ≤200 ms as good and &gt;500 ms as poor, while mobile search latency research shows delays around 7–10 seconds significantly worsen perceived experience. Sources: <a href="https://web.dev/articles/defining-core-web-vitals-thresholds" target="_blank" rel="noopener noreferrer">Google INP thresholds</a>, <a href="https://arxiv.org/abs/2101.09086" target="_blank" rel="noopener noreferrer">mobile search latency study</a>, and <a href="https://www.nngroup.com/articles/response-times-3-important-limits/" target="_blank" rel="noopener noreferrer">classic NN/g response-time guidance</a>.</span></span></h2>
+            <h2 class="label-with-info">What this demonstrates <span class="info-icon has-rich-tooltip" tabindex="0" aria-label="Response-time guidance source">i<span class="info-tooltip">Qualitative thresholds combine SaaS-oriented performance targets, Google Core Web Vitals, and UX/search latency research. SaaS benchmark targets include key page elements loaded within 3s, full page load within 5s, response time within 500ms, and TTFB within 200ms. Google rates LCP ≤2.5s, INP ≤200ms, and CLS ≤0.1 as good UX thresholds. Retention estimates remain illustrative rather than enterprise-SaaS-specific. Sources: <a href="https://www.catchpoint.com/learn/2025-saas-website-performance-benchmark-report" target="_blank" rel="noopener noreferrer">SaaS performance benchmark</a>, <a href="https://web.dev/articles/vitals" target="_blank" rel="noopener noreferrer">Google Core Web Vitals</a>, <a href="https://arxiv.org/abs/2101.09086" target="_blank" rel="noopener noreferrer">mobile search latency study</a>, and <a href="https://www.nngroup.com/articles/response-times-3-important-limits/" target="_blank" rel="noopener noreferrer">classic NN/g response-time guidance</a>.</span></span></h2>
             <button class="collapse-toggle" type="button" aria-label="Collapse What this demonstrates" aria-expanded="true"><span class="chevron">⌃</span></button>
           </div>
           <div class="tile-body">
             <div class="metric-group-header">
-              <div class="label-with-info metric-group-title">Performance tradeoff <span class="info-icon has-rich-tooltip" tabindex="0" aria-label="Response-time guidance source">i<span class="info-tooltip">Qualitative thresholds are based on modern responsiveness guidance: Google’s INP Core Web Vital rates ≤200 ms as good and &gt;500 ms as poor, while mobile search latency research shows delays around 7–10 seconds significantly worsen perceived experience. Sources: <a href="https://web.dev/articles/defining-core-web-vitals-thresholds" target="_blank" rel="noopener noreferrer">Google INP thresholds</a>, <a href="https://arxiv.org/abs/2101.09086" target="_blank" rel="noopener noreferrer">mobile search latency study</a>, and <a href="https://www.nngroup.com/articles/response-times-3-important-limits/" target="_blank" rel="noopener noreferrer">classic NN/g response-time guidance</a>.</span></span></div>
-              <p class="explainer metric-group-explainer">Debounce delay and server latency compound for search interactions. App presets use page-load performance metrics, so debounce doesn’t apply and the demo models the latency value only.</p>
+              <div class="label-with-info metric-group-title">Performance tradeoff <span class="info-icon has-rich-tooltip" tabindex="0" aria-label="Response-time guidance source">i<span class="info-tooltip">Qualitative thresholds combine SaaS-oriented performance targets, Google Core Web Vitals, and UX/search latency research. SaaS benchmark targets include key page elements loaded within 3s, full page load within 5s, response time within 500ms, and TTFB within 200ms. Google rates LCP ≤2.5s, INP ≤200ms, and CLS ≤0.1 as good UX thresholds. Retention estimates remain illustrative rather than enterprise-SaaS-specific. Sources: <a href="https://www.catchpoint.com/learn/2025-saas-website-performance-benchmark-report" target="_blank" rel="noopener noreferrer">SaaS performance benchmark</a>, <a href="https://web.dev/articles/vitals" target="_blank" rel="noopener noreferrer">Google Core Web Vitals</a>, <a href="https://arxiv.org/abs/2101.09086" target="_blank" rel="noopener noreferrer">mobile search latency study</a>, and <a href="https://www.nngroup.com/articles/response-times-3-important-limits/" target="_blank" rel="noopener noreferrer">classic NN/g response-time guidance</a>.</span></span></div>
+              <p class="explainer metric-group-explainer">Debounce delay and load time compound for search interactions. App presets use page-load performance metrics, where ≤3s is treated as good, 3–5s as caution, and >5s as poor for this demo.</p>
             </div>
             <div class="bars">
               <div class="bar-row">
@@ -1931,7 +2019,7 @@
               <div class="tradeoff-connector-line"></div>
             </div>
             <div class="funnel-inline">
-              <div class="label-with-info metric-group-title">Willingness to wait <span class="info-icon has-rich-tooltip" tabindex="0" aria-label="Willingness to wait source">i<span class="info-tooltip">Qualitative thresholds are based on modern responsiveness guidance: Google’s INP Core Web Vital rates ≤200 ms as good and &gt;500 ms as poor, while mobile search latency research shows delays around 7–10 seconds significantly worsen perceived experience. Sources: <a href="https://web.dev/articles/defining-core-web-vitals-thresholds" target="_blank" rel="noopener noreferrer">Google INP thresholds</a>, <a href="https://arxiv.org/abs/2101.09086" target="_blank" rel="noopener noreferrer">mobile search latency study</a>, and <a href="https://www.nngroup.com/articles/response-times-3-important-limits/" target="_blank" rel="noopener noreferrer">classic NN/g response-time guidance</a>.</span></span></div>
+              <div class="label-with-info metric-group-title">Willingness to wait <span class="info-icon has-rich-tooltip" tabindex="0" aria-label="Willingness to wait source">i<span class="info-tooltip">Qualitative thresholds combine SaaS-oriented performance targets, Google Core Web Vitals, and UX/search latency research. SaaS benchmark targets include key page elements loaded within 3s, full page load within 5s, response time within 500ms, and TTFB within 200ms. Google rates LCP ≤2.5s, INP ≤200ms, and CLS ≤0.1 as good UX thresholds. Retention estimates remain illustrative rather than enterprise-SaaS-specific. Sources: <a href="https://www.catchpoint.com/learn/2025-saas-website-performance-benchmark-report" target="_blank" rel="noopener noreferrer">SaaS performance benchmark</a>, <a href="https://web.dev/articles/vitals" target="_blank" rel="noopener noreferrer">Google Core Web Vitals</a>, <a href="https://arxiv.org/abs/2101.09086" target="_blank" rel="noopener noreferrer">mobile search latency study</a>, and <a href="https://www.nngroup.com/articles/response-times-3-important-limits/" target="_blank" rel="noopener noreferrer">classic NN/g response-time guidance</a>.</span></span></div>
               <p class="explainer metric-group-explainer">Starting from 100%, this estimates the share of users who may still be willing to wait as total time to first results increases.</p>
               <div class="funnel">
                 <div class="funnel-row">
@@ -1954,6 +2042,31 @@
                 </div>
               </div>
               <p class="funnel-note" id="funnelNote">Adjust debounce and server latency to model the effect on willingness to wait.</p>
+              <div class="sentiment-legend" aria-label="Static time and sentiment legend">
+                <div class="sentiment-legend-title">Time → sentiment</div>
+                <div class="sentiment-scale">
+                  <div class="sentiment-point">
+                    <div class="sentiment-face" aria-hidden="true">😊</div>
+                    <div><div class="sentiment-time">≤3s</div><div class="sentiment-label">Good</div></div>
+                  </div>
+                  <div class="sentiment-point">
+                    <div class="sentiment-face" aria-hidden="true">🙂</div>
+                    <div><div class="sentiment-time">3–5s</div><div class="sentiment-label">Caution</div></div>
+                  </div>
+                  <div class="sentiment-point">
+                    <div class="sentiment-face" aria-hidden="true">😐</div>
+                    <div><div class="sentiment-time">5–7s</div><div class="sentiment-label">Slow</div></div>
+                  </div>
+                  <div class="sentiment-point">
+                    <div class="sentiment-face" aria-hidden="true">😟</div>
+                    <div><div class="sentiment-time">7–10s</div><div class="sentiment-label">Frustrating</div></div>
+                  </div>
+                  <div class="sentiment-point">
+                    <div class="sentiment-face" aria-hidden="true">😡</div>
+                    <div><div class="sentiment-time">10s+</div><div class="sentiment-label">Anger</div></div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -2573,9 +2686,9 @@
     }
 
     function estimateUsersRetained(totalWait) {
-      if (totalWait <= 1000) return 100;
-      if (totalWait <= 3000) return Math.round(100 - ((totalWait - 1000) / 2000) * 40);
-      if (totalWait <= 10000) return Math.round(60 - ((totalWait - 3000) / 7000) * 50);
+      if (totalWait <= 3000) return 100;
+      if (totalWait <= 5000) return Math.round(100 - ((totalWait - 3000) / 2000) * 25);
+      if (totalWait <= 10000) return Math.round(75 - ((totalWait - 5000) / 5000) * 65);
       return 10;
     }
 
@@ -2599,10 +2712,10 @@
         els.funnelDroppedLabel.textContent = `${dropped}%`;
       }
 
-      let note = 'At or under about 1 second, flow is generally preserved.';
-      if (totalWait > 1000) note = 'Past 1 second, users are more likely to notice the wait.';
-      if (totalWait > 3000) note = 'Around 3 seconds, published ecommerce research suggests meaningful abandonment risk.';
-      if (totalWait > 10000) note = 'Around 10 seconds, NN/g guidance says attention is likely to drift.';
+      let note = 'At or under about 3 seconds, key SaaS page elements are generally within a reasonable target range.';
+      if (totalWait > 3000) note = 'Past about 3 seconds, this moves into a caution zone for SaaS page-load experience.';
+      if (totalWait > 5000) note = 'Past about 5 seconds, this misses a common full-page-load target and should feel slow.';
+      if (totalWait > 10000) note = 'Around 10 seconds, classic UX guidance says attention is likely to drift.';
       els.funnelNote.textContent = note;
     }
 
@@ -2613,13 +2726,12 @@
       const load = debounceDelay === null ? 0 : (loadMap[debounceDelay] ?? Math.max(8, 100 - debounceDelay / 5));
       let ux = 92;
       let uxLabel = 'Best';
-      if (debounceDelay === 0 && latency < 300) { ux = 82; uxLabel = 'Fast/noisy'; }
-      if (totalWait > 500) { ux = 72; uxLabel = 'Noticeable'; }
-      if (totalWait > 750) { ux = 52; uxLabel = 'Slow'; }
-      if (totalWait > 1000) { ux = 34; uxLabel = 'Very slow'; }
-      if (totalWait > 3000) { ux = 18; uxLabel = 'Poor'; }
+      if (debounceDelay === 0 && latency < 300) { ux = 84; uxLabel = 'Fast/noisy'; }
+      if (totalWait > 3000) { ux = 68; uxLabel = 'Noticeable'; }
+      if (totalWait > 5000) { ux = 44; uxLabel = 'Slow'; }
+      if (totalWait > 10000) { ux = 18; uxLabel = 'Severe'; }
 
-      const waitTone = totalWait <= 500 ? 'metric-good' : totalWait <= 1000 ? 'metric-ok' : totalWait <= 3000 ? 'metric-warn' : 'metric-bad';
+      const waitTone = totalWait <= 3000 ? 'metric-good' : totalWait <= 5000 ? 'metric-warn' : 'metric-bad';
       const loadTone = load <= 20 ? 'metric-good' : load <= 50 ? 'metric-ok' : load <= 75 ? 'metric-warn' : 'metric-bad';
       const uxTone = ux >= 80 ? 'metric-good' : ux >= 60 ? 'metric-ok' : ux >= 35 ? 'metric-warn' : 'metric-bad';
 
